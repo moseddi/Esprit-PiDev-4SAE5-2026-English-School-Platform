@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { timer, Subscription } from 'rxjs';
 import { Club } from '../../models/club.model';
 import { CategoryClub } from '../../models/enums';
 import { ClubService } from '../../services/club.service';
@@ -9,17 +11,21 @@ import { JoinClubFormComponent } from '../join-club-form/join-club-form.componen
 @Component({
   selector: 'app-clubs-user-list',
   standalone: true,
-  imports: [CommonModule, JoinClubFormComponent],
+  imports: [CommonModule, FormsModule, JoinClubFormComponent],
   templateUrl: './clubs-user-list.component.html',
   styleUrls: ['./clubs-user-list.component.css']
 })
-export class ClubsUserListComponent implements OnInit {
+export class ClubsUserListComponent implements OnInit, OnDestroy {
   clubs: Club[] = [];
   filteredClubs: Club[] = [];
+  searchTerm: string = '';
   selectedCategory: string = 'all';
   selectedClubForJoin: { id: number; name: string } | null = null;
   showJoinForm: boolean = false;
   userRegistrations: number[] = []; // Store club IDs user has joined
+  popularClubName: string = '';
+  private pollingSubscription: Subscription | null = null;
+
   categories = [
     { value: 'all', label: 'ALL CLUBS' },
     { value: 'ACADEMY', label: 'ACADEMY' },
@@ -31,12 +37,68 @@ export class ClubsUserListComponent implements OnInit {
 
   constructor(
     private clubService: ClubService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
     this.loadClubs();
     this.loadUserRegistrations();
+
+    // Initial load from REST to show immediate state
+    this.loadPopularClub();
+
+    // Switch to WebSocket for real-time updates (replaces 30s timer)
+    this.connectToPopularityWebSocket();
+  }
+
+  ngOnDestroy() {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
+  }
+
+  connectToPopularityWebSocket() {
+    console.log('ClubsUserListComponent: Establishing WebSocket connection...');
+    this.pollingSubscription = this.clubService.getPopularityWebSocket().subscribe({
+      next: (name) => {
+        console.log('Real-time update received:', name);
+        if (name && name !== 'No registrations today') {
+          if (this.popularClubName !== name) {
+            this.popularClubName = name;
+            this.cdr.detectChanges();
+          }
+        } else {
+          if (this.popularClubName !== '') {
+            this.popularClubName = '';
+            this.cdr.detectChanges();
+          }
+        }
+      },
+      error: (err) => {
+        console.warn('WebSocket failed (server might be down). Reverting to one-time REST load for demo safety.', err);
+      }
+    });
+  }
+
+  loadPopularClub() {
+    this.clubService.getPopularClub().subscribe({
+      next: (name) => {
+        if (name && name !== 'No registrations today') {
+          if (this.popularClubName !== name) {
+            this.popularClubName = name;
+            console.log('Popular club updated:', name);
+            this.cdr.detectChanges();
+          }
+        } else {
+          if (this.popularClubName !== '') {
+            this.popularClubName = '';
+            this.cdr.detectChanges();
+          }
+        }
+      },
+      error: (err) => console.error('Error fetching popular club:', err)
+    });
   }
 
   loadClubs() {
@@ -54,11 +116,35 @@ export class ClubsUserListComponent implements OnInit {
 
   filterByCategory(category: string) {
     this.selectedCategory = category;
-    if (category === 'all') {
-      this.filteredClubs = [...this.clubs];
-    } else {
-      this.filteredClubs = this.clubs.filter(club => club.Category === category);
+    this.applyFilters();
+  }
+
+  onSearch() {
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    let filtered = [...this.clubs];
+
+    // Filter by Category
+    if (this.selectedCategory !== 'all') {
+      filtered = filtered.filter(club => club.Category === this.selectedCategory);
     }
+
+    // Filter by Search Term
+    if (this.searchTerm && this.searchTerm.trim() !== '') {
+      const term = this.searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(club =>
+        (club.name && club.name.toLowerCase().includes(term)) ||
+        (this.getAnyName(club).toLowerCase().includes(term))
+      );
+    }
+
+    this.filteredClubs = filtered;
+  }
+
+  private getAnyName(club: any): string {
+    return club.Name || club.name || '';
   }
 
   openJoinForm(club: Club) {
@@ -75,7 +161,6 @@ export class ClubsUserListComponent implements OnInit {
     // Mock implementation - in real app, this would save to backend
     this.userRegistrations.push(this.selectedClubForJoin!.id);
     console.log('User joined club:', this.selectedClubForJoin?.name);
-    alert(`Successfully joined ${this.selectedClubForJoin?.name}!`);
     this.closeJoinForm();
   }
 

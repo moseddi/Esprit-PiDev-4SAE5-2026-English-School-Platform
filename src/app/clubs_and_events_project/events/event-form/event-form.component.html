@@ -38,6 +38,7 @@
               @if (eventForm.get('title')?.invalid && eventForm.get('title')?.touched) {
               <div class="mt-2 text-red-500 text-[10px] font-bold uppercase tracking-wide ml-1">
                 @if (eventForm.get('title')?.errors?.['required']) { <span>Designation is mandatory</span> }
+                @if (eventForm.get('title')?.errors?.['minlength']) { <span>Minimum 2 characters required</span> }
               </div>
               }
             </div>
@@ -103,7 +104,15 @@
                   class="block text-[10px] font-black uppercase tracking-widest text-[#2D5757]/40 ml-1">Inception
                   *</label>
                 <input id="startDate" type="datetime-local" formControlName="startDate"
+                  [class.border-red-500]="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched"
                   class="w-full px-6 py-4 bg-[#F7EDE2]/20 border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all" />
+                @if (eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched) {
+                <div class="mt-2 text-red-500 text-[10px] font-bold uppercase tracking-wide ml-1">
+                  @if (eventForm.get('startDate')?.errors?.['required']) { <span>Start date is mandatory</span> }
+                  @if (eventForm.get('startDate')?.errors?.['pastDate']) { <span>Start date cannot be in the past</span>
+                  }
+                </div>
+                }
               </div>
 
               <!-- End Date Field -->
@@ -112,7 +121,15 @@
                   class="block text-[10px] font-black uppercase tracking-widest text-[#2D5757]/40 ml-1">Conclusion
                   *</label>
                 <input id="endDate" type="datetime-local" formControlName="endDate"
+                  [class.border-red-500]="(eventForm.get('endDate')?.invalid && eventForm.get('endDate')?.touched) || (eventForm.touched && eventForm.errors?.['dateRange'])"
                   class="w-full px-6 py-4 bg-[#F7EDE2]/20 border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all" />
+                @if ((eventForm.get('endDate')?.invalid && eventForm.get('endDate')?.touched) || (eventForm.touched &&
+                eventForm.errors?.['dateRange'])) {
+                <div class="mt-2 text-red-500 text-[10px] font-bold uppercase tracking-wide ml-1">
+                  @if (eventForm.get('endDate')?.errors?.['required']) { <span>End date is mandatory</span> }
+                  @if (eventForm.errors?.['dateRange']) { <span>End date must be after start date</span> }
+                </div>
+                }
               </div>
             </div>
 

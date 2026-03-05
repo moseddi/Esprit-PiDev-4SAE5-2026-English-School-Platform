@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventService } from '../../services/event.service';
 import { ClubService } from '../../services/club.service';
@@ -32,16 +32,31 @@ export class EventFormComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.eventForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(2)]],
       type: [EventType.MEETING, Validators.required],
-      startDate: ['', Validators.required],
+      startDate: ['', [Validators.required, this.futureDateValidator]],
       endDate: ['', Validators.required],
       manifesto: ['', [Validators.required, Validators.minLength(10)]],
       maxParticipants: [1, [Validators.required, Validators.min(1)]],
       status: ['PLANNED', Validators.required],
       clubId: [null, Validators.required],
       estimatedCost: [0, [Validators.required, Validators.min(0)]]
-    });
+    }, { validators: this.dateRangeValidator });
+  }
+
+  // Custom Validators
+  futureDateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const date = new Date(control.value);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return date < now ? { pastDate: true } : null;
+  }
+
+  dateRangeValidator(group: AbstractControl): ValidationErrors | null {
+    const start = group.get('startDate')?.value;
+    const end = group.get('endDate')?.value;
+    return start && end && new Date(start) > new Date(end) ? { dateRange: true } : null;
   }
 
   ngOnInit() {

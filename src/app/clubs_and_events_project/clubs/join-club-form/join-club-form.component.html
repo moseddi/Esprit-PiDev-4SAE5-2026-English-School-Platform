@@ -54,7 +54,13 @@
                 *</label>
               <input id="fullName" type="text" formControlName="fullName" placeholder="Enter your full name"
                 class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all"
+                [class.border-red-500]="joinForm.get('fullName')?.invalid && joinForm.get('fullName')?.touched"
                 required />
+              <div *ngIf="joinForm.get('fullName')?.invalid && joinForm.get('fullName')?.touched"
+                class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                <span *ngIf="joinForm.get('fullName')?.errors?.['required']">Full name is required</span>
+                <span *ngIf="joinForm.get('fullName')?.errors?.['minlength']">Minimum 2 characters required</span>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -65,7 +71,12 @@
                   *</label>
                 <input id="email" type="email" formControlName="email" placeholder="name@example.com"
                   class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all"
-                  required />
+                  [class.border-red-500]="joinForm.get('email')?.invalid && joinForm.get('email')?.touched" required />
+                <div *ngIf="joinForm.get('email')?.invalid && joinForm.get('email')?.touched"
+                  class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                  <span *ngIf="joinForm.get('email')?.errors?.['required']">Email is required</span>
+                  <span *ngIf="joinForm.get('email')?.errors?.['email']">Invalid email format</span>
+                </div>
               </div>
 
               <!-- Phone -->
@@ -75,7 +86,12 @@
                   *</label>
                 <input id="phone" type="tel" formControlName="phone" placeholder="+1..."
                   class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all"
-                  required />
+                  [class.border-red-500]="joinForm.get('phone')?.invalid && joinForm.get('phone')?.touched" required />
+                <div *ngIf="joinForm.get('phone')?.invalid && joinForm.get('phone')?.touched"
+                  class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                  <span *ngIf="joinForm.get('phone')?.errors?.['required']">Phone is required</span>
+                  <span *ngIf="joinForm.get('phone')?.errors?.['pattern']">Invalid phone format</span>
+                </div>
               </div>
             </div>
 
@@ -87,7 +103,13 @@
                   *</label>
                 <input id="studentId" type="text" formControlName="studentId" placeholder="ID Number"
                   class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all"
+                  [class.border-red-500]="joinForm.get('studentId')?.invalid && joinForm.get('studentId')?.touched"
                   required />
+                <div *ngIf="joinForm.get('studentId')?.invalid && joinForm.get('studentId')?.touched"
+                  class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                  <span *ngIf="joinForm.get('studentId')?.errors?.['required']">Student ID is required</span>
+                  <span *ngIf="joinForm.get('studentId')?.errors?.['minlength']">Minimum 3 characters required</span>
+                </div>
               </div>
 
               <!-- Year of Study -->
@@ -98,6 +120,7 @@
                 <div class="relative">
                   <select id="yearOfStudy" formControlName="yearOfStudy"
                     class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all appearance-none"
+                    [class.border-red-500]="joinForm.get('yearOfStudy')?.invalid && joinForm.get('yearOfStudy')?.touched"
                     required>
                     <option value="">Select Year</option>
                     <option value="1">1st Year</option>
@@ -106,12 +129,11 @@
                     <option value="4">4th Year</option>
                     <option value="5">5th Year</option>
                   </select>
-                  <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-[#2D5757]/30">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
                 </div>
+              </div>
+              <div *ngIf="joinForm.get('yearOfStudy')?.invalid && joinForm.get('yearOfStudy')?.touched"
+                class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                Year of study is required
               </div>
             </div>
           </div>
@@ -131,7 +153,13 @@
               <textarea id="motivation" formControlName="motivation" rows="3"
                 placeholder="Share your interest in this club..."
                 class="w-full px-6 py-4 bg-white border border-[#2D5757]/10 rounded-2xl text-[#2D5757] font-bold focus:outline-none focus:ring-4 focus:ring-[#2D5757]/5 focus:border-[#2D5757] transition-all"
+                [class.border-red-500]="joinForm.get('motivation')?.invalid && joinForm.get('motivation')?.touched"
                 required></textarea>
+              <div *ngIf="joinForm.get('motivation')?.invalid && joinForm.get('motivation')?.touched"
+                class="text-red-500 text-[10px] font-bold mt-1 ml-2 uppercase tracking-wider">
+                <span *ngIf="joinForm.get('motivation')?.errors?.['required']">Motivation is required</span>
+                <span *ngIf="joinForm.get('motivation')?.errors?.['minlength']">Minimum 5 characters required</span>
+              </div>
             </div>
 
             <div class="space-y-2">
@@ -151,9 +179,14 @@
               class="mt-1 h-5 w-5 text-[#2D5757] border-[#2D5757]/20 rounded focus:ring-[#2D5757] focus:ring-offset-0"
               required />
             <label for="terms" class="ml-4 text-xs font-medium text-[#2D5757]/60 leading-relaxed">
-              I agree to the <a href="#" class="text-[#2D5757] font-bold hover:underline">Membership Guidelines</a> and
+              I agree to the <a href="#" class="text-[#2D5757] font-bold hover:underline">Membership Guidelines</a>
+              and
               understand my application will be reviewed by administrators.
             </label>
+          </div>
+          <div *ngIf="joinForm.get('termsAccepted')?.invalid && joinForm.get('termsAccepted')?.touched"
+            class="text-red-500 text-[10px] font-bold mt-2 ml-9 uppercase tracking-wider">
+            You must accept the terms to proceed
           </div>
         </div>
 

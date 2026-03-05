@@ -152,8 +152,7 @@ export class ClubsListComponent implements OnInit {
       console.log('Received club ID:', clubId);
       console.log('Found club:', club);
     } else {
-      console.error('Invalid parameter type:', typeof clubOrId);
-      alert('Invalid parameter type');
+      this.notificationService.error('Invalid parameter type');
       return;
     }
 

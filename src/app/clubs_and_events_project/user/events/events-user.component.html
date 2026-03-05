@@ -23,13 +23,31 @@
                         <h1 class="text-xl font-bold text-[#F7EDE2] tracking-tight">Browse Events</h1>
                     </div>
                 </div>
-                <span class="text-[#F7EDE2]/50 text-xs font-bold uppercase tracking-widest">{{ events.length }} events
-                    available</span>
+                <span class="text-[#F7EDE2]/50 text-xs font-bold uppercase tracking-widest">{{ filteredEvents.length }}
+                    events
+                    found</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Search Section -->
+        <div class="mb-12 max-w-2xl mx-auto">
+            <div class="relative group">
+                <label for="eventSearch" class="sr-only">Search events</label>
+                <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-[#F7EDE2]/40 group-focus-within:text-[#F7EDE2] transition-colors duration-300"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input id="eventSearch" type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                    placeholder="Search for an event by title..."
+                    class="w-full bg-white/5 border border-white/10 text-[#F7EDE2] placeholder-[#F7EDE2]/20 rounded-2xl py-5 pl-16 pr-6 focus:outline-none focus:ring-4 focus:ring-white/5 focus:border-white/30 transition-all duration-300 font-bold">
+            </div>
+        </div>
 
         <!-- Page Title -->
         <div class="text-center mb-16">
@@ -71,20 +89,20 @@
         }
 
         <!-- Empty State -->
-        @if (!isLoading && !error && events.length === 0) {
+        @if (!isLoading && !error && filteredEvents.length === 0) {
         <div class="text-center py-24 bg-white/5 rounded-3xl border border-white/5">
             <svg class="w-20 h-20 mx-auto mb-6 text-[#F7EDE2]/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p class="text-[#F7EDE2]/40 text-xl font-medium tracking-wide">No events available yet.</p>
+            <p class="text-[#F7EDE2]/40 text-xl font-medium tracking-wide">No events matching your search.</p>
         </div>
         }
 
         <!-- Events Grid -->
-        @if (!isLoading && !error && events.length > 0) {
+        @if (!isLoading && !error && filteredEvents.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @for (event of events; track event.id) {
+            @for (event of filteredEvents; track event.id) {
             <div
                 class="group bg-[#F7EDE2] rounded-3xl border border-white/5 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
 

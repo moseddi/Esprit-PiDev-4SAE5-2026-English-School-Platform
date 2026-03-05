@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ClubService } from '../clubs_and_events_project/services/club.service';
 import { NavbarFrontComponent } from '../courses/navbar-front/navbar-front.component';
 import { ProfileCompletionComponent } from '../profile-completion/profile-completion.component';
 
@@ -17,21 +18,21 @@ export class HomeComponent implements OnInit {
   isLoggedIn = false;
   userRole = '';
   canAccessBackoffice = false;
-  
+
   user: any = {};
   showDropdown = false;
   showProfileModal = false;
 
   constructor(
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const user = this.authService.getUser();
     this.user = user;
     this.isLoggedIn = !!user;
     this.userRole = user?.role || '';
-    
+
     // Check if user has ADMIN or TUTOR role
     this.canAccessBackoffice = this.userRole === 'ADMIN' || this.userRole === 'TUTOR';
   }

@@ -79,4 +79,44 @@ export class ClubService {
     // Simple delete without complex headers/options
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getPopularClub(): Observable<string> {
+    const url = `${this.apiUrl}/popularity/top?t=${new Date().getTime()}`;
+    return this.http.get(url, { responseType: 'text' }).pipe(
+      catchError(error => {
+        console.error('ClubService: GET Popular Club ERROR', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getPopularityWebSocket(): Observable<string> {
+    // Connect to the WebSocket endpoint on its specific port
+    const wsUrl = `ws://localhost:7071/ws-popularity`;
+
+    return new Observable<string>(observer => {
+      const socket = new WebSocket(wsUrl);
+
+      socket.onmessage = (event) => {
+        observer.next(event.data);
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+        observer.error(error);
+      };
+
+      socket.onclose = (event) => {
+        console.log('WebSocket Connection Closed:', event);
+        observer.complete();
+      };
+
+      // Handle cleanup when unsubscribed
+      return () => {
+        if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+          socket.close();
+        }
+      };
+    });
+  }
 }

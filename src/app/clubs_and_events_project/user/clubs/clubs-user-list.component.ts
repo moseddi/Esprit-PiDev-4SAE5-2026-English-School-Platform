@@ -52,13 +52,7 @@ export class ClubsUserListComponent implements OnInit {
   }
 
   joinClub(clubId: number) {
-    if (this.isUserJoined(clubId)) {
-      alert('You are already a member of this club!');
-      return;
-    }
-
-    alert(`Joining club with ID: ${clubId}`);
-    // TODO: Implement actual join logic
+    // Mock join logic
     this.userRegistrations.push(clubId);
   }
 

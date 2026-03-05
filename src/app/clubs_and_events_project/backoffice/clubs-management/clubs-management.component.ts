@@ -64,8 +64,7 @@ export class ClubsManagementComponent implements OnInit {
 
     // Vérification que l'ID existe
     if (!club || !club.ID_Club) {
-      console.error('Invalid club data for update:', club);
-      alert('Invalid club data for update');
+      this.notificationService.error('Invalid club data for update');
       return;
     }
 
@@ -75,7 +74,7 @@ export class ClubsManagementComponent implements OnInit {
 
     if (isNaN(clubId)) {
       console.error('ID is not a valid number:', clubId);
-      alert('Invalid club ID for update');
+      this.notificationService.error('Invalid club ID for update');
       return;
     }
 

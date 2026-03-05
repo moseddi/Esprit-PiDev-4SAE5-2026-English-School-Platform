@@ -12,10 +12,10 @@ import { Subscription } from 'rxjs';
     <div *ngIf="notification.show" 
          class="fixed top-8 right-8 z-[9999] animate-in slide-in-from-right-10 fade-in duration-500">
       <div [ngClass]="{
-             'bg-[#2D5757] text-[#F7EDE2]': notification.type === 'success' || notification.type === 'info',
-             'bg-red-600 text-white': notification.type === 'error'
+             'bg-[#F7EDE2] text-[#2D5757] border-[#2D5757]/20 shadow-[0_20px_40px_-15px_rgba(45,87,87,0.2)]': notification.type === 'success' || notification.type === 'info',
+             'bg-red-50 text-red-600 border-red-200 shadow-[0_20px_40px_-15px_rgba(220,38,38,0.1)]': notification.type === 'error'
            }"
-           class="flex items-center p-6 rounded-[2rem] shadow-2xl border border-white/10 min-w-[320px] max-w-md">
+           class="flex items-center p-6 rounded-[2rem] border min-w-[320px] max-w-md backdrop-blur-sm">
         
         <!-- Icon -->
         <div class="mr-5 p-3 rounded-2xl bg-white/10 shadow-inner">

@@ -103,6 +103,7 @@
   margin-bottom: 0.75rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -206,12 +207,83 @@
   .clubs-user-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .clubs-user-card-actions {
     flex-direction: column;
   }
-  
+
   .clubs-user-card-actions button {
     width: 100%;
+  }
+}
+
+/* Popularity Notice Banner */
+.popularity-notice {
+  background: rgba(247, 237, 226, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(247, 237, 226, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(45, 87, 87, 0.1);
+  animation: slideDownIn 0.8s ease-out forwards;
+  position: relative;
+  z-index: 10;
+}
+
+.popularity-icon {
+  font-size: 1.5rem;
+  color: #ff9f1a;
+  animation: pulseFire 2s infinite;
+}
+
+.popularity-text {
+  font-family: 'Merriweather Sans', sans-serif;
+  color: #F7EDE2;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.popularity-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  background: #F7EDE2;
+  color: #2D5757;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseFire {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }

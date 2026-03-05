@@ -26,8 +26,38 @@
     </div>
   </header>
 
+  <!-- Popularity Notice Banner -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6" *ngIf="popularClubName">
+    <div class="popularity-notice">
+      <div class="popularity-icon">
+        <i class="bi bi-fire"></i>
+      </div>
+      <div class="popularity-text">
+        <span class="popularity-label">Trending Now</span>
+        The most popular club of the day is: <span class="text-[#F7EDE2]">{{ popularClubName }}</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content -->
   <main class="clubs-user-main max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Search Section -->
+    <div class="clubs-user-search mb-8 max-w-2xl mx-auto">
+      <div class="relative group">
+        <label for="clubSearch" class="sr-only">Search clubs</label>
+        <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-[#F7EDE2]/40 group-focus-within:text-[#F7EDE2] transition-colors duration-300"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input id="clubSearch" type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+          placeholder="Search for a club name..."
+          class="w-full bg-white/5 border border-white/10 text-[#F7EDE2] placeholder-[#F7EDE2]/20 rounded-2xl py-5 pl-16 pr-6 focus:outline-none focus:ring-4 focus:ring-white/5 focus:border-white/30 transition-all duration-300 font-bold">
+      </div>
+    </div>
+
     <!-- Filter Section (Clean Buttons) -->
     <div class="clubs-user-filter mb-12">
       <div class="flex flex-wrap gap-3 justify-center">
