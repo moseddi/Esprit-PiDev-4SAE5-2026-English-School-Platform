@@ -34,7 +34,7 @@ export interface CreateUserRequest {
   createdBy?: string;
 }
 
- export interface UpdateUserRequest {
+export interface UpdateUserRequest {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
@@ -65,4 +65,23 @@ export interface UserProfileDTO {
   active: boolean;
   loginCount?: number;
   createdBy?: string;
+}
+
+// ===== FORGOT PASSWORD INTERFACES =====
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ValidateTokenRequest {
+  token: string;
+}
+
+export interface ValidateTokenResponse {
+  valid: boolean;
+  message?: string;
 }

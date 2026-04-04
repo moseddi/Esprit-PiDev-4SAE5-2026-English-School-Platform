@@ -60,7 +60,7 @@
       </div>
       <div class="banner-stats">
         <div class="banner-stat">
-          <span class="stat-3d">24</span>
+          <span class="stat-3d">{{ activeSessions }}</span>
           <span>Active Sessions</span>
         </div>
         <div class="banner-stat">
@@ -70,6 +70,120 @@
       </div>
     </div>
 
+    <!-- 🚀 LIVE SECURITY MONITOR - ENHANCED VERSION -->
+    <div class="live-monitor-premium" style="background: linear-gradient(135deg, #0f2121, #1e3a3a); border-radius: 24px; padding: 24px; margin: 24px 0; border: 1px solid rgba(45,87,87,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+      
+      <!-- Header with Export Button -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h3 style="margin: 0; display: flex; align-items: center; gap: 12px;">
+            <i class="bi bi-shield-shaded" style="font-size: 28px; color: #4a8a8a;"></i>
+            <span style="font-size: 20px;">🛡️ Live Security Monitor</span>
+            <span style="font-size: 12px; background: #28a745; padding: 4px 12px; border-radius: 20px; animation: pulse 1.5s infinite;">● LAST 24 HOURS</span>
+          </h3>
+          <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.6);">Real-time login & logout activity from your platform</p>
+        </div>
+        <div style="display: flex; gap: 24px; align-items: center;">
+          <div style="text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: #4a8a8a;">{{ activeSessions }}</div>
+            <div style="font-size: 12px;">Active Sessions</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 32px; font-weight: bold; color: #ffc107;">{{ suspiciousLogins }}</div>
+            <div style="font-size: 12px;">Suspicious (24h)</div>
+          </div>
+          <button (click)="exportSuspiciousReport()" 
+                  style="background: #2D5757; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-download"></i> Export CSV
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filter Buttons -->
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <button (click)="setFilter('all')" 
+                [style.background]="currentFilter === 'all' ? '#2D5757' : 'rgba(255,255,255,0.1)'"
+                style="border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; color: white; transition: all 0.3s;">
+          All
+        </button>
+        <button (click)="setFilter('login')" 
+                [style.background]="currentFilter === 'login' ? '#28a745' : 'rgba(255,255,255,0.1)'"
+                style="border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; color: white; transition: all 0.3s;">
+          🔐 Logins Only
+        </button>
+        <button (click)="setFilter('logout')" 
+                [style.background]="currentFilter === 'logout' ? '#dc3545' : 'rgba(255,255,255,0.1)'"
+                style="border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; color: white; transition: all 0.3s;">
+          🚪 Logouts Only
+        </button>
+        <button (click)="setFilter('suspicious')" 
+                [style.background]="currentFilter === 'suspicious' ? '#ffc107' : 'rgba(255,255,255,0.1)'"
+                style="border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; color: white; transition: all 0.3s;">
+          ⚠️ Suspicious Only
+        </button>
+      </div>
+      
+      <!-- Activity List -->
+      <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; max-height: 300px; overflow-y: auto; backdrop-filter: blur(4px);">
+        <div *ngFor="let login of filteredLogins" 
+             [ngStyle]="{
+               'padding': '12px',
+               'border-bottom': '1px solid rgba(255,255,255,0.08)',
+               'font-family': 'monospace',
+               'font-size': '13px',
+               'display': 'flex',
+               'align-items': 'center',
+               'gap': '12px',
+               'transition': 'all 0.3s ease',
+               'background': login.includes('⚠️') ? 'rgba(255,193,7,0.15)' : 'transparent',
+               'border-left': login.includes('⚠️') ? '3px solid #ffc107' : 'none'
+             }">
+          <span style="flex: 1; color: white;">{{ login }}</span>
+          <span *ngIf="login.includes('⚠️')" style="background: #ffc107; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">
+            SUSPICIOUS
+          </span>
+          <button *ngIf="login.includes('⚠️')" 
+                  (click)="markAsSafe(login)"
+                  style="background: #28a745; color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 11px;">
+            ✓ Mark Safe
+          </button>
+          <button (click)="showLocation(login)"
+                  style="background: #17a2b8; color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 11px;">
+            📍 Location
+          </button>
+        </div>
+        <div *ngIf="filteredLogins.length === 0" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+          <i class="bi bi-eye" style="font-size: 32px; opacity: 0.5;"></i>
+          <p style="margin-top: 12px;">No activity matching filter</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Geolocation Map Modal -->
+    <div *ngIf="showMapModal" (click)="showMapModal = false" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+      <div (click)="$event.stopPropagation()" style="background: #1e3a3a; border-radius: 24px; padding: 24px; width: 90%; max-width: 500px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0;">📍 Login Location</h3>
+          <button (click)="showMapModal = false" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        <div style="background: #0f2121; border-radius: 16px; padding: 20px; text-align: center;">
+          <i class="bi bi-geo-alt-fill" style="font-size: 48px; color: #4a8a8a;"></i>
+          <p style="margin: 15px 0 0 0;"><strong>IP:</strong> {{ selectedIp }}</p>
+          <p><strong>Country:</strong> {{ selectedCountry }}</p>
+          <p><strong>City:</strong> {{ selectedCity }}</p>
+          <p><strong>Device:</strong> {{ selectedDevice }}</p>
+          <p><strong>Time:</strong> {{ selectedTime }}</p>
+          <div *ngIf="selectedLat && selectedLon" style="margin-top: 15px;">
+            <a [href]="'https://www.google.com/maps?q=' + selectedLat + ',' + selectedLon" target="_blank" 
+               style="background: #2D5757; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; display: inline-block;">
+              View on Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rest of your existing content (KPI Cards, Analytics, Tables, etc.) -->
     <!-- 3D KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card-3d" *ngFor="let kpi of kpis" (click)="navigateTo(kpi.route)">
@@ -94,7 +208,6 @@
 
     <!-- Premium Analytics Section -->
     <div class="analytics-premium">
-      <!-- 3D Revenue Chart -->
       <div class="chart-3d revenue-chart">
         <div class="chart-header">
           <h3><i class="bi bi-graph-up"></i> Revenue Analytics</h3>
@@ -106,7 +219,6 @@
             </select>
           </div>
         </div>
-        
         <div class="chart-3d-container">
           <div class="bars-3d">
             <div class="bar-3d-group" *ngFor="let item of revenueData; let i = index">
@@ -127,12 +239,10 @@
         </div>
       </div>
 
-      <!-- 3D Donut Chart -->
       <div class="chart-3d donut-chart">
         <div class="chart-header">
           <h3><i class="bi bi-pie-chart"></i> User Distribution</h3>
         </div>
-        
         <div class="donut-3d-container">
           <div class="donut-3d">
             <svg viewBox="0 0 100 100" class="donut-svg">
@@ -155,7 +265,6 @@
               <span>Total Users</span>
             </div>
           </div>
-          
           <div class="legend-3d">
             <div class="legend-item-3d" *ngFor="let segment of userSegments">
               <div class="legend-dot-3d" [style.background]="segment.color"></div>
@@ -186,7 +295,6 @@
 
     <!-- Premium Tables Section -->
     <div class="tables-premium">
-      <!-- Users Table with 3D Rows -->
       <div class="table-3d users-table">
         <div class="table-header-3d">
           <h3><i class="bi bi-people"></i> Recent Users</h3>
@@ -195,7 +303,6 @@
             <i class="bi bi-arrow-right"></i>
           </button>
         </div>
-        
         <div class="table-3d-container">
           <table class="table-3d">
             <thead>
@@ -246,7 +353,6 @@
         </div>
       </div>
 
-      <!-- Events with 3D Cards -->
       <div class="table-3d events-table">
         <div class="table-header-3d">
           <h3><i class="bi bi-calendar-event"></i> Upcoming Events</h3>
@@ -255,7 +361,6 @@
             <i class="bi bi-arrow-right"></i>
           </button>
         </div>
-        
         <div class="events-3d-container">
           <div class="event-card-3d" *ngFor="let event of upcomingEvents" (click)="viewEvent(event)">
             <div class="event-3d-inner">
@@ -279,7 +384,6 @@
         </div>
       </div>
 
-      <!-- Clubs with 3D Progress -->
       <div class="table-3d clubs-table">
         <div class="table-header-3d">
           <h3><i class="bi bi-chat-heart"></i> Active Clubs</h3>
@@ -288,7 +392,6 @@
             <i class="bi bi-arrow-right"></i>
           </button>
         </div>
-        
         <div class="clubs-3d-container">
           <div class="club-card-3d" *ngFor="let club of clubs" (click)="viewClub(club)">
             <div class="club-3d-inner">
@@ -320,7 +423,6 @@
         <h3><i class="bi bi-clock-history"></i> Activity Timeline</h3>
         <span class="live-indicator">LIVE</span>
       </div>
-      
       <div class="timeline-3d">
         <div class="timeline-3d-item" *ngFor="let activity of activities; let i = index">
           <div class="timeline-marker-3d" [style.background]="activity.color" [style.--delay]="i * 0.2 + 's'">
@@ -343,3 +445,11 @@
     </div>
   </div>
 </div>
+
+<style>
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+</style>

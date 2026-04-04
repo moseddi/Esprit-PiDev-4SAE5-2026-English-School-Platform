@@ -563,19 +563,16 @@
                         </div>
 
                         <!-- Social Login Section -->
-                        <div class="social-login">
-                            <p class="social-text">Or continue with</p>
-                            <div class="social-buttons">
-                                <button type="button" class="social-btn google-btn" (click)="socialLogin('google')">
-                                    <i class="bi bi-google"></i>
-                                    <span>Google</span>
-                                </button>
-                                <button type="button" class="social-btn facebook-btn" (click)="socialLogin('facebook')">
-                                    <i class="bi bi-facebook"></i>
-                                    <span>Facebook</span>
-                                </button>
-                            </div>
-                        </div>
+                        <div class="social-buttons">
+  <button type="button" class="social-btn google-btn" (click)="loginWithGoogle()">
+    <i class="bi bi-google"></i>
+    <span>Google</span>
+  </button>
+  <button type="button" class="social-btn facebook-btn" (click)="loginWithFacebook()">
+    <i class="bi bi-facebook"></i>
+    <span>Facebook</span>
+  </button>
+</div>
                         
                         <div class="signup-section">
                             <p class="mb-2">Not a Wall Street English student?</p>

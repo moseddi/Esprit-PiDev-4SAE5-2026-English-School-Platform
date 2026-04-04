@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { WebSocketService } from '../../services/websocket.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-view',
@@ -9,10 +11,29 @@ import { Router } from '@angular/router';
   templateUrl: './admin-view.component.html',
   styleUrls: ['./admin-view.component.css']
 })
-export class AdminViewComponent {
+export class AdminViewComponent implements OnInit, OnDestroy {
   Math = Math;
   totalUsers = 1284 + 24 + 3;
 
+  // Real-time properties
+  recentLogins: string[] = [];
+  activeSessions = 0;
+  suspiciousLogins = 0;
+  
+  // Filter
+  currentFilter: string = 'all';
+  
+  // Geolocation modal
+  showMapModal: boolean = false;
+  selectedIp: string = '';
+  selectedCountry: string = '';
+  selectedCity: string = '';
+  selectedLat: string = '';
+  selectedLon: string = '';
+  selectedDevice: string = '';
+  selectedTime: string = '';
+
+  // KPI Cards
   kpis = [
     { icon: 'bi-people', label: 'Total Users', value: '1,284', trend: 12, color: '#2D5757', route: 'users' },
     { icon: 'bi-book', label: 'Courses', value: '156', trend: 8, color: '#17a2b8', route: 'courses' },
@@ -73,7 +94,187 @@ export class AdminViewComponent {
     { title: 'Certificate Issued', desc: '5 students received certificates', time: '3 hours ago', user: 'System', userInitials: 'SY', userColor: '#dc3545', color: '#dc3545' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private ws: WebSocketService,
+    private http: HttpClient
+  ) {}
+
+  get filteredLogins(): string[] {
+    if (this.currentFilter === 'login') {
+      return this.recentLogins.filter(l => l.includes('LOGIN'));
+    }
+    if (this.currentFilter === 'logout') {
+      return this.recentLogins.filter(l => l.includes('LOGOUT'));
+    }
+    if (this.currentFilter === 'suspicious') {
+      return this.recentLogins.filter(l => l.includes('⚠️'));
+    }
+    return this.recentLogins;
+  }
+
+  setFilter(filter: string): void {
+    this.currentFilter = filter;
+  }
+
+  markAsSafe(loginMessage: string): void {
+    // Remove the suspicious indicator from the message
+    const safeMessage = loginMessage.replace('⚠️ ', '✓ Safe: ');
+    
+    // Update the array
+    const index = this.recentLogins.indexOf(loginMessage);
+    if (index !== -1) {
+      this.recentLogins[index] = safeMessage;
+      this.recentLogins = [...this.recentLogins];
+    }
+    
+    // Update suspicious count
+    this.suspiciousLogins = this.recentLogins.filter(l => l.includes('⚠️')).length;
+    
+    console.log('Marked as safe:', safeMessage);
+  }
+
+  exportSuspiciousReport(): void {
+    const suspicious = this.recentLogins.filter(l => l.includes('⚠️'));
+    
+    if (suspicious.length === 0) {
+      alert('No suspicious logins to export');
+      return;
+    }
+    
+    const csvRows = [
+      ['Timestamp', 'Event Type', 'Email', 'Role', 'IP', 'Message']
+    ];
+    
+    for (const entry of suspicious) {
+      // Parse the message
+      const cleanMsg = entry.replace('⚠️ ', '');
+      const isLogin = cleanMsg.includes('LOGIN');
+      const parts = cleanMsg.match(/(\w+):\s+(\S+)\s+\((\w+)\)\s+from\s+([\d\.]+)\s+at\s+([\d:]+)/);
+      
+      if (parts) {
+        csvRows.push([
+          parts[5],
+          parts[1],
+          parts[2],
+          parts[3],
+          parts[4],
+          cleanMsg
+        ]);
+      } else {
+        csvRows.push([new Date().toISOString(), 'UNKNOWN', '', '', '', cleanMsg]);
+      }
+    }
+    
+    const csvContent = csvRows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `suspicious_logins_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  showLocation(loginMessage: string): void {
+    // Parse IP from message
+    const ipMatch = loginMessage.match(/from\s+([\d\.]+)/);
+    if (ipMatch) {
+      this.selectedIp = ipMatch[1];
+    } else {
+      this.selectedIp = 'Unknown';
+    }
+    
+    // Parse time from message
+    const timeMatch = loginMessage.match(/at\s+([\d:]+)/);
+    if (timeMatch) {
+      this.selectedTime = timeMatch[1];
+    } else {
+      this.selectedTime = 'Unknown';
+    }
+    
+    // Parse device info
+    if (loginMessage.includes('Chrome')) this.selectedDevice = 'Chrome Browser';
+    else if (loginMessage.includes('Firefox')) this.selectedDevice = 'Firefox Browser';
+    else if (loginMessage.includes('Safari')) this.selectedDevice = 'Safari Browser';
+    else this.selectedDevice = 'Unknown Device';
+    
+    // Get geolocation from IP
+    if (this.selectedIp !== '127.0.0.1' && this.selectedIp !== 'Unknown') {
+      this.http.get(`https://ipapi.co/${this.selectedIp}/json/`).subscribe({
+        next: (data: any) => {
+          this.selectedCountry = data.country_name || 'Unknown';
+          this.selectedCity = data.city || 'Unknown';
+          this.selectedLat = data.latitude;
+          this.selectedLon = data.longitude;
+          this.showMapModal = true;
+        },
+        error: () => {
+          this.selectedCountry = 'Local/Unknown';
+          this.selectedCity = 'Local/Unknown';
+          this.showMapModal = true;
+        }
+      });
+    } else {
+      this.selectedCountry = 'Localhost (Development)';
+      this.selectedCity = 'Local Machine';
+      this.showMapModal = true;
+    }
+  }
+
+  ngOnInit(): void {
+    console.log('AdminViewComponent initialized');
+
+    // Load recent logins from last 24 hours
+    this.ws.getRecentLogins().subscribe({
+      next: (logins: string[]) => {
+        console.log('Recent events received:', logins.length);
+        this.recentLogins = [...new Set(logins.map(l => String(l)))];
+      },
+      error: (err: any) => {
+        console.error('Error loading events:', err);
+      }
+    });
+
+    // Get active sessions count
+    this.ws.getActiveSessions().subscribe({
+      next: (count: number) => {
+        this.activeSessions = count;
+      }
+    });
+
+    // Get suspicious logins count
+    this.ws.getSuspiciousLogins().subscribe({
+      next: (count: number) => {
+        this.suspiciousLogins = count;
+      }
+    });
+
+    // Connect WebSocket for real-time updates
+    this.ws.connect();
+
+    // Listen for new real-time events
+    this.ws.getLoginStream().subscribe({
+      next: (event: string) => {
+        if (!event) return;
+        console.log('New event:', event);
+        
+        if (!this.recentLogins.includes(event)) {
+          this.recentLogins = [event, ...this.recentLogins].slice(0, 50);
+          this.suspiciousLogins = this.recentLogins.filter(l => l.includes('⚠️')).length;
+        } else {
+          console.log('Duplicate ignored, message already exists');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error receiving event:', err);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    console.log('AdminViewComponent destroyed — WebSocket stays alive');
+  }
 
   getDashOffset(index: number): number {
     const offsets = [0, 25, 50];
@@ -94,12 +295,10 @@ export class AdminViewComponent {
 
   editUser(user: any): void {
     console.log('Edit user:', user);
-    event?.stopPropagation();
   }
 
   deleteUser(user: any): void {
     console.log('Delete user:', user);
-    event?.stopPropagation();
   }
 
   viewEvent(event: any): void {
