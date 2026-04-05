@@ -1,18 +1,23 @@
- import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http'; // 👈 Add this
-import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+import { KeycloakService } from 'keycloak-angular';
 
+import { routes } from './app.routes';
+import { AuthService } from './services/auth.service';
+import { initializeKeycloak } from './config/keycloak-init';  // Your init file
 
 export const appConfig: ApplicationConfig = {
   providers: [
-
-    provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    provideHttpClient()
-
-   
-    
-
+    provideHttpClient(),
+    KeycloakService,
+    AuthService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService]
+    }
   ]
 };

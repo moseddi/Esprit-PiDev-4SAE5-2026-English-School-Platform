@@ -35,7 +35,7 @@ export class StudentLoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginData).subscribe({
-      next: (response) => {
+      next: (response: any) => {  // Added :any type
         this.isLoading = false;
         if (response.role === 'ADMIN' || response.role === 'TUTOR') {
           this.router.navigate(['/backoffice']);
@@ -43,7 +43,7 @@ export class StudentLoginComponent {
           this.router.navigate(['/']);
         }
       },
-      error: (error) => {
+      error: (error: any) => {  // Added :any type
         this.isLoading = false;
         this.errorMessage = error.error?.message || 'Invalid email or password';
       }
@@ -54,4 +54,11 @@ export class StudentLoginComponent {
     console.log(`Login with ${provider}`);
     this.errorMessage = `${provider} login coming soon!`;
   }
+  loginWithGoogle() {
+  window.location.href = 'http://localhost:6083/realms/myapp2/protocol/openid-connect/auth?client_id=angular-app&redirect_uri=http://localhost:4200&response_mode=query&response_type=code&scope=openid&kc_idp_hint=google';
+}
+
+ loginWithFacebook() {
+  window.location.href = 'http://localhost:6083/realms/myapp2/protocol/openid-connect/auth?client_id=angular-app&redirect_uri=http://localhost:4200&response_mode=query&response_type=code&scope=openid&kc_idp_hint=facebook';
+}
 }
