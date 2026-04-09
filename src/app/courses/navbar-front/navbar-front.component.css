@@ -143,6 +143,52 @@ body {
   background: rgba(45, 87, 87, 0.08);
 }
 
+/* Nav Dropdown Styles */
+.has-dropdown:hover .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #F7EDE2;
+  min-width: 200px;
+  list-style: none;
+  padding: 0.75rem 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(45, 87, 87, 0.12);
+  border-top: 3px solid #2D5757;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.nav-dropdown li a {
+  display: block;
+  padding: 0.6rem 1.5rem;
+  color: #2D5757;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-dropdown li a:hover {
+  background: rgba(45, 87, 87, 0.08);
+  padding-left: 1.8rem;
+}
+
+.sub-icon {
+  font-size: 0.7rem;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
 .nav-badge {
   font-size: 0.6rem;
   padding: 0.1rem 0.35rem;
@@ -1477,4 +1523,8 @@ body {
   .hero-stat-number {
     font-size: 1.8rem;
   }
+  
+  
+  
+  
 }

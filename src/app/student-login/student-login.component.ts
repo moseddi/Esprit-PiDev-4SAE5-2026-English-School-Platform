@@ -1,39 +1,57 @@
 import { Component } from '@angular/core';
-import { RouterLink, Router } from '@angular/router'; // Added Router
-import { FormsModule } from '@angular/forms'; // Added FormsModule
-import { CommonModule } from '@angular/common'; // Added CommonModule
-import { AuthService } from '../services/auth.service'; // Added AuthService
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../assessment_project/shared/services/auth.service';
 
 @Component({
   selector: 'app-student-login',
   standalone: true,
-  imports: [RouterLink, FormsModule, CommonModule], // Added FormsModule and CommonModule
+  imports: [RouterLink, FormsModule, CommonModule],
   templateUrl: './student-login.component.html',
-  styleUrl: './student-login.component.css'
+  styleUrls: ['./student-login.component.css']
 })
 export class StudentLoginComponent {
-  // Add this login data object
   loginData = {
     email: '',
     password: ''
   };
 
-  // Add constructor with dependencies
+  isLoading = false;
+  errorMessage = '';
+
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
-  // Add onSubmit method
   onSubmit() {
-    this.authService.login(this.loginData).subscribe({
-      next: (response) => {
-        if (response.role === 'ADMIN' || response.role === 'TUTOR') {
-          this.router.navigate(['/backoffice']);
+    if (!this.loginData.email || !this.loginData.password) {
+      this.errorMessage = 'L\'email et le mot de passe sont requis';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.authService.login(this.loginData.email, this.loginData.password).subscribe({
+      next: (user) => {
+        this.isLoading = false;
+        if (user.role === 'ADMIN') {
+          this.router.navigate(['/backoffice/game-sessions']);
         } else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/assessment/frontoffice']);
         }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = 'Email ou mot de passe incorrect.';
       }
     });
+  }
+
+  socialLogin(provider: string) {
+    console.log(`Login with ${provider}`);
+    this.errorMessage = `${provider} login coming soon!`;
   }
 }

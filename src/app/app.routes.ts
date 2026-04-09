@@ -13,9 +13,7 @@ import { RoleGuard } from './guards/role.guard';
 import { EventsComponent } from './backoffice/admin-view/events/events.component';
 import { ClubsComponent } from './backoffice/admin-view/clubs/clubs.component';
 import { CourseListComponent } from './courses/course-list/course-list.component';
-
 import { ListeCoursStudentComponent } from './courses/liste-cours-student/liste-cours-student.component';
-
 import { ClassesComponent } from './backoffice/admin-view/classes/classes.component';
 import { CourseFormComponent } from './courses/course-form/course-form.component';
 import { LessonListComponent } from './courses/lesson-list/lesson-list.component';
@@ -29,8 +27,13 @@ import { NavbarFrontComponent } from './courses/navbar-front/navbar-front.compon
 import { ListLessonComponent } from './courses/list-lesson/list-lesson.component';
 import { ListLessonStudentComponent } from './courses/list-lesson-student/list-lesson-student.component';
 import { FooterFrontComponent } from './courses/footer-front/footer-front.component';
-
-
+import { AuthGuard } from './guards/auth.guard';
+import { JobOffersPublicComponent } from './job-offers/job-offers-public.component';
+import { MyApplicationsComponent } from './my-applications/my-applications.component';
+import { JobOfferListComponent } from './backoffice/admin-view/job-offers/job-offer-list.component';
+import { JobOfferFormComponent } from './backoffice/admin-view/job-offers/job-offer-form.component';
+import { ApplicationListComponent } from './backoffice/admin-view/applications/application-list.component';
+import { RecruitmentComponent } from './recruitment/recruitment.component';
 
 export const routes: Routes = [
   { path: 'login', component: StudentLoginComponent },
@@ -39,9 +42,22 @@ export const routes: Routes = [
   { path: 'nav', component: NavbarFrontComponent },
   { path: 'fot', component: FooterFrontComponent },
 
+  { path: 'recruitment', redirectTo: 'assessment/frontoffice/recruitment', pathMatch: 'full' },
+
+
+  // Integrated User Project routes
+  { path: 'assessment', loadChildren: () => import('./assessment_project/app.routes').then(m => m.routes) },
+  { path: 'frontoffice', loadChildren: () => import('./clubs_and_events_project/frontoffice/frontoffice.module').then(m => m.FrontofficeModule) },
+  { path: 'admin-clubs', loadChildren: () => import('./clubs_and_events_project/clubs/clubs.module').then(m => m.ClubsModule) },
+  { path: 'admin-events', loadChildren: () => import('./clubs_and_events_project/events/events.module').then(m => m.EventsModule) },
+  { path: 'admin-spaces', loadChildren: () => import('./clubs_and_events_project/spaces/spaces.module').then(m => m.SpacesModule) },
+  { path: 'admin-clubs-events', loadChildren: () => import('./clubs_and_events_project/backoffice/backoffice.module').then(m => m.BackofficeModule) },
+
+
   // Student Course routes
   { path: 'cours', component: ListeCoursStudentComponent },
   { path: 'cours/:courseId/lessons', component: ListLessonStudentComponent },
+
   // Course routes
   { path: 'courses', component: CourseListComponent },
   { path: 'courses/new', component: CourseFormComponent },
@@ -64,92 +80,128 @@ export const routes: Routes = [
   { path: 'reservations/edit/:id', component: ReservationFormComponent },
 
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  
-  { 
-    path: 'backoffice', 
+
+  {
+    path: 'backoffice',
     component: BackofficeComponent,
     canActivate: [RoleGuard],
     data: { roles: ['ADMIN', 'TUTOR'] },
     children: [
-      { 
-        path: '', 
+      {
+        path: '',
         component: AdminViewComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN', 'TUTOR'] }
       },
-      
+      {
+        path: 'profile-completion',
+        loadComponent: () => import('./profile-completion/profile-completion.component').then(m => m.ProfileCompletionComponent),
+        canActivate: [AuthGuard]
+      },
+
       // Admin only routes
-      { 
-        path: 'admin', 
+      {
+        path: 'admin',
         component: AdminViewComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
-      { 
-        path: 'admin/users', 
+      {
+        path: 'admin/users',
         component: UsersComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
-      { 
-        path: 'courses', 
-        component: CourseListComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['ADMIN'] }
-      },
-
-
-
-      { 
-        path: 'courses/new', 
-        component: CourseFormComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['ADMIN'] }
-      },
-      
-      // Tutor only routes
-      { 
-        path: 'tutor', 
-        component: TutorViewComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['TUTOR'] }
-      },
-      { 
-        path: 'tutor/my-students', 
-        component: MyStudentsComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['TUTOR'] }
-      },
-      { 
-        path: 'tutor/schedule', 
-        component: ScheduleComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['TUTOR'] }
-      },
-      { 
-        path: 'admin/events', 
+      {
+        path: 'admin/events',
         component: EventsComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
-      { 
-        path: 'admin/clubs', 
+      {
+        path: 'admin/clubs',
         component: ClubsComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
-      { 
-        path: 'admin/classes', 
+      {
+        path: 'admin/classes',
         component: ClassesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
-      { 
-        path: 'admin/physicalspace', 
+      {
+        path: 'admin/physicalspace',
         component: PhysicalspaceComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },
+      {
+        path: 'admin/job-offers',
+        component: JobOfferListComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+      {
+        path: 'admin/job-offers/new',
+        component: JobOfferFormComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+      {
+        path: 'admin/applications',
+        component: ApplicationListComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+      {
+        path: 'courses',
+        component: CourseListComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+      {
+        path: 'courses/new',
+        component: CourseFormComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+
+      // Assessment Backoffice routes integrated into main Sidebar
+      {
+        path: '',
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] },
+        loadChildren: () =>
+          import('./assessment_project/backoffice/backoffice.routes').then(m => {
+            // We skip the assessment project's internal layout to use the main backoffice layout
+            const routes = m.backofficeRoutes;
+            if (routes[0] && routes[0].children) {
+              return routes[0].children;
+            }
+            return routes;
+          })
+      },
+
+      // Tutor only routes
+      {
+        path: 'tutor',
+        component: TutorViewComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['TUTOR'] }
+      },
+      {
+        path: 'tutor/my-students',
+        component: MyStudentsComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['TUTOR'] }
+      },
+      {
+        path: 'tutor/schedule',
+        component: ScheduleComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['TUTOR'] }
+      }
     ]
   }
 ];

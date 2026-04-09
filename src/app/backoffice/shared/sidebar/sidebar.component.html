@@ -3,30 +3,45 @@
     <div class="logo">WSE</div>
     <h3>Backoffice</h3>
   </div>
-  
+
   <nav class="sidebar-nav">
+    <!-- Dashboard Principal -->
     <div class="nav-section">
-      <h4>Admin</h4>
       <ul>
-        <li><a routerLink="/backoffice/admin" routerLinkActive="active">Dashboard</a></li>
-        <li><a routerLink="/backoffice/admin/users" routerLinkActive="active">Users</a></li>
-        <li><a routerLink="courses" routerLinkActive="active">Courses</a></li>
-        <li><a routerLink="/backoffice/admin/events" routerLinkActive="active">Events</a></li>
-        <li><a routerLink="/backoffice/admin/clubs" routerLinkActive="active">Clubs</a></li>
-        <li><a routerLink="/backoffice/admin/physicalspace" routerLinkActive="active">Physical Space</a></li>
-        <li><a routerLink="/backoffice/admin/classes" routerLinkActive="active">Classes</a></li>
-        <li><a routerLink="/seances" routerLinkActive="active">Coaching Seances</a></li>
-        <li><a routerLink="/reservations" routerLinkActive="active">Reservations</a></li>
+        <li>
+          <a [routerLink]="backofficeNav.main.route" routerLinkActive="active">
+            <span class="nav-icon">{{ backofficeNav.main.icon }}</span>
+            {{ backofficeNav.main.label }}
+          </a>
+        </li>
       </ul>
     </div>
-    
-    <div class="nav-section">
-      <h4>Tutor</h4>
-      <ul>
-        <li><a routerLink="/backoffice/tutor" routerLinkActive="active">Dashboard</a></li>
-        <li><a routerLink="/backoffice/tutor/my-students" routerLinkActive="active">My Students</a></li>
-        <li><a routerLink="/backoffice/tutor/schedule" routerLinkActive="active">Schedule</a></li>
-      </ul>
+
+    <!-- Navigation Dynamique (Mode Jeu, Recrutement, Examens) -->
+    <div class="nav-section" *ngIf="userRole === 'ADMIN'">
+      <div *ngFor="let group of backofficeNav.groups" class="nav-group-wrapper">
+        <div class="nav-group-header" (click)="toggleDropdown(group.title)">
+          <span class="group-title">{{ group.title }}</span>
+          <span class="group-arrow" [class.rotated]="isDropdownOpen[group.title]">▼</span>
+        </div>
+        
+        <ul class="nav-group-items" *ngIf="isDropdownOpen[group.title]">
+          <li *ngFor="let item of group.items">
+            <a [routerLink]="item.route" routerLinkActive="active" class="sub-link">
+              <span class="nav-icon">{{ item.icon }}</span>
+              {{ item.label }}
+              <span *ngIf="item.badge" class="nav-badge">{{ item.badge }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
+
+  <div class="sidebar-footer" style="padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 4px;">
+    <a routerLink="/home" style="display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem;">
+      <span class="nav-icon">🌐</span> Voir le site
+    </a>
+    <span class="version-tag" style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">v1.0.0</span>
+  </div>
 </aside>

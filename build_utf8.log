@@ -1,0 +1,235 @@
+﻿[33mÔØ»[39m Building...
+[32mÔ£ö[39m Building...
+Application bundle generation failed. [13.100 seconds]
+
+node.exe : 
+[1m[33m[33mÔû▓ [43
+;33m[[43;30mWARNING[
+43;33m][0m 
+[1mNG8107: The left 
+side of this optional 
+chain operation does 
+not include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+Au caractère C:\Users\
+pc\AppData\Roaming\npm
+\ng.ps1:24 : 5
++     & "node$exe"  "$
+basedir/node_modules/@
+angular/cli/bin/ng.js"
+ $arg ...
++     ~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ([1m[33m   
+ [33mÔ...r-compile    
+r][0m:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+
+    src/app/assessment
+_project/backoffice/pa
+ges/assessment-exams/a
+ssessment-exam-questio
+ns.component.ts:44:55:
+[37m      44 Ôöé 
+...pe-badge qtype-{{ q
+.type?.[32mtoLowerCas
+e[37m() }}">{{ 
+typeLabel(q.type...
+         ÔòÁ          
+                    
+[32m~~~~~~~~~~~[0m
+
+
+[33mÔû▓ [43;33m[[43
+;30mWARNING[43;33m][
+0m [1mNG8107: The 
+left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/assessment
+_project/frontoffice/p
+ages/examen/passer-exa
+men.component.ts:82:72
+:
+[37m      82 Ôöé ...s
+="question-text">{{ qu
+estions[currentQuestio
+nIndex]?.[32mtext[37
+m }}</h3>
+         ÔòÁ          
+                      
+                      
+    [32m~~~~[0m
+
+
+[33mÔû▓ [43;33m[[43
+;30mWARNING[43;33m][
+0m [1mNG8107: The 
+left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/assessment
+_project/frontoffice/p
+ages/mes-notes-examen/
+mes-notes-examen.compo
+nent.ts:74:49:
+[37m      74 Ôöé ...c
+lass="exam-name">{{ a.
+exam?.[32mtitle[37m 
+|| ('Examen #' + 
+a.exam?.id)...
+         ÔòÁ          
+                      
+ [32m~~~~~[0m
+
+
+[33mÔû▓ [43;33m[[43
+;30mWARNING[43;33m][
+0m [1mNG8107: The 
+left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/assessment
+_project/frontoffice/p
+ages/mes-notes-examen/
+mes-notes-examen.compo
+nent.ts:74:80:
+[37m      74 Ôöé 
+...="exam-name">{{ 
+a.exam?.title || 
+('Examen #' + 
+a.exam?.[32mid[37m) 
+}}</h3>
+         ÔòÁ          
+                      
+                      
+     [32m~~[0m
+
+
+[33mÔû▓ [43;33m[[43
+;30mWARNING[43;33m][
+0m [1mNG8107: The 
+left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/assessment
+_project/frontoffice/p
+ages/mes-notes-examen/
+mes-notes-examen.compo
+nent.ts:97:55:
+[37m      97 Ôöé ... 
+r├®ussite : 
+<strong>{{ a.exam?[32
+m.passingScor[37me 
+?? 50 }}/100</strong>
+         ÔòÁ          
+                      
+  
+[32m~~~~~~~~~~~~[0m
+
+
+[33mÔû▓ [43;33m[[43
+;30mWARNING[43;33m][
+0m [1mNG8107: The 
+left side of this 
+optional chain 
+operation does not 
+include 'null' or 
+'undefined' in its 
+type, therefore the 
+'?.' operator can be 
+replaced with the '.' 
+operator.[0m 
+[1m[35m[plugin 
+angular-compiler][0m
+
+    src/app/assessment
+_project/frontoffice/p
+ages/mes-resultats/mes
+-resultats.component.t
+s:44:56:
+[37m      44 Ôöé 
+...ert-level level-{{ 
+c.level?.[32mtoLowerC
+ase[37m() }}">{{ 
+c.level }}</span>
+         ÔòÁ          
+                      
+[32m~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;3
+1m[[41;97mERROR[41;3
+1m][0m [1mCould not 
+resolve "net"[0m
+
+    node_modules/stomp
+js/lib/stomp-node.js:1
+2:16:
+[37m      12 Ôöé   
+net = require([32m'ne
+t'[37m);
+         ÔòÁ          
+       [32m~~~~~[0m
+
+  The package "net" 
+wasn't found on the 
+file system but is 
+built into node. Are 
+you trying to bundle 
+for node? You can use 
+"platform: 'node'" to 
+do that, which will 
+remove this error.
+
+[39m[22m

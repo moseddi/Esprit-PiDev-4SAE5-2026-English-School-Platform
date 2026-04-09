@@ -31,117 +31,103 @@
       <div class="form-content">
         <h3>Create Account</h3>
         <p class="form-subtitle">Fill in your information to get started</p>
-        
+
         <form #signupForm="ngForm" (ngSubmit)="onSubmit()">
-          <!-- Email -->
+          <!-- Error Message -->
+          <div class="error-alert" *ngIf="errorMessage">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <p>{{ errorMessage }}</p>
+          </div>
+
+          <!-- Username (Required) -->
+          <div class="form-group">
+            <label for="username">Nom d'utilisateur <span class="required">*</span></label>
+            <input type="text" id="username" name="username" class="form-control"
+              placeholder="Choisissez un nom d'utilisateur" [(ngModel)]="signupData.username" required
+              #username="ngModel">
+            <div class="error-message" *ngIf="username.invalid && username.touched">
+              Le nom d'utilisateur est requis
+            </div>
+          </div>
+
+          <!-- Email (Required) -->
           <div class="form-group">
             <label for="email">Email <span class="required">*</span></label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email"
-              class="form-control" 
-              placeholder="Enter your email"
-              [(ngModel)]="signupData.email"
-              required
-              email
-              #email="ngModel"
-            >
+            <input type="email" id="email" name="email" class="form-control" placeholder="Entrez votre email"
+              [(ngModel)]="signupData.email" required (input)="emailTouched = true" #email="ngModel">
             <div class="error-message" *ngIf="email.invalid && email.touched">
-              <span *ngIf="email.errors?.['required']">Email is required</span>
-              <span *ngIf="email.errors?.['email']">Please enter a valid email</span>
+              L'email est requis
+            </div>
+            <div class="error-message" *ngIf="validateEmail()">
+              {{ validateEmail() }}
             </div>
           </div>
 
-          <!-- First Name -->
+          <!-- Role selection (Required) -->
           <div class="form-group">
-            <label for="firstName">First Name <span class="required">*</span></label>
-            <input 
-              type="text" 
-              id="firstName" 
-              name="firstName"
-              class="form-control" 
-              placeholder="Enter your first name"
-              [(ngModel)]="signupData.firstName"
-              required
-              #firstName="ngModel"
-            >
-            <div class="error-message" *ngIf="firstName.invalid && firstName.touched">
-              First name is required
+            <label for="role">Rôle <span class="required">*</span></label>
+            <select id="role" name="role" class="form-control" [(ngModel)]="signupData.role" required>
+              <option value="PLAYER">Étudiant / Joueur</option>
+              <option value="ADMIN">Administrateur</option>
+            </select>
+          </div>
+
+          <!-- Password (Required) -->
+          <div class="form-group">
+            <label for="password">Mot de passe <span class="required">*</span></label>
+            <input type="password" id="password" name="password" class="form-control"
+              placeholder="Créez un mot de passe" [(ngModel)]="signupData.password" required #password="ngModel">
+
+            <!-- Password Strength Indicator -->
+            <div class="password-strength" *ngIf="signupData.password">
+              <div class="strength-meter">
+                <div class="strength-bar" [ngClass]="getPasswordStrengthClass()"></div>
+              </div>
+              <div class="strength-text" [ngClass]="getPasswordStrengthClass()">
+                {{ getPasswordStrengthText() }}
+              </div>
+              <div class="password-requirements">
+                <div class="requirement" [class.valid]="hasMinLength">
+                  <i class="bi" [ngClass]="hasMinLength ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                  Au moins 8 caractères
+                </div>
+                <div class="requirement" [class.valid]="hasUpperCase">
+                  <i class="bi" [ngClass]="hasUpperCase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                  Une majuscule
+                </div>
+                <div class="requirement" [class.valid]="hasLowerCase">
+                  <i class="bi" [ngClass]="hasLowerCase ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                  Une minuscule
+                </div>
+                <div class="requirement" [class.valid]="hasNumber">
+                  <i class="bi" [ngClass]="hasNumber ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                  Un chiffre
+                </div>
+                <div class="requirement" [class.valid]="hasSpecialChar">
+                  <i class="bi" [ngClass]="hasSpecialChar ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                  Un caractère spécial (!&#64;#$%^&*)
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Last Name (Optional) -->
+          <!-- Confirm Password (Required) -->
           <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input 
-              type="text" 
-              id="lastName" 
-              name="lastName"
-              class="form-control" 
-              placeholder="Enter your last name (optional)"
-              [(ngModel)]="signupData.lastName"
-              #lastName="ngModel"
-            >
-          </div>
-
-          <!-- Phone Number (Optional) -->
-          <div class="form-group">
-            <label for="phoneNumber">Phone Number</label>
-            <input 
-              type="tel" 
-              id="phoneNumber" 
-              name="phoneNumber"
-              class="form-control" 
-              placeholder="Enter your phone number (optional)"
-              [(ngModel)]="signupData.phoneNumber"
-              #phoneNumber="ngModel"
-            >
-          </div>
-
-          <!-- Password -->
-          <div class="form-group">
-            <label for="password">Password <span class="required">*</span></label>
-            <input 
-              type="password" 
-              id="password" 
-              name="password"
-              class="form-control" 
-              placeholder="Create a password"
-              [(ngModel)]="signupData.password"
-              required
-              minlength="6"
-              #password="ngModel"
-            >
-            <div class="error-message" *ngIf="password.invalid && password.touched">
-              <span *ngIf="password.errors?.['required']">Password is required</span>
-              <span *ngIf="password.errors?.['minlength']">Password must be at least 6 characters</span>
+            <label for="confirmPassword">Confirmer le mot de passe <span class="required">*</span></label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+              placeholder="Confirmez votre mot de passe" [(ngModel)]="signupData.confirmPassword" required
+              #confirmPassword="ngModel">
+            <div class="error-message"
+              *ngIf="signupData.password !== signupData.confirmPassword && confirmPassword.touched">
+              Les mots de passe ne correspondent pas
             </div>
           </div>
 
-          <!-- Confirm Password -->
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              name="confirmPassword"
-              class="form-control" 
-              placeholder="Confirm your password"
-              [(ngModel)]="signupData.confirmPassword"
-              required
-              #confirmPassword="ngModel"
-            >
-            <div class="error-message" *ngIf="signupData.password !== signupData.confirmPassword && confirmPassword.touched">
-              Passwords do not match
-            </div>
-          </div>
-
-          <!-- Terms Checkbox -->
+          <!-- Terms Checkbox (Required) -->
           <div class="terms-checkbox">
             <input type="checkbox" id="terms" name="acceptTerms" [(ngModel)]="acceptTerms" required #terms="ngModel">
             <label for="terms">
-              I agree to the <a href="javascript:void(0)">Terms of Service</a> and 
+              I agree to the <a href="javascript:void(0)">Terms of Service</a> and
               <a href="javascript:void(0)">Privacy Policy</a> <span class="required">*</span>
             </label>
           </div>
@@ -180,12 +166,6 @@
         <div class="success-message" *ngIf="signupSuccess">
           <i class="bi bi-check-circle-fill"></i>
           <p>Account created successfully! Redirecting to login...</p>
-        </div>
-
-        <!-- Error Message -->
-        <div class="error-alert" *ngIf="errorMessage">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          <p>{{ errorMessage }}</p>
         </div>
       </div>
     </div>
