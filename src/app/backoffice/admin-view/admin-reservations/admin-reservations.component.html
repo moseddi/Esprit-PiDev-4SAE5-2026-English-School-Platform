@@ -31,8 +31,6 @@
         <tr>
           <th>#</th>
           <th>Étudiant</th>
-          <th>Tuteur / Coach</th>
-          <th>Séance</th>
           <th>Date</th>
           <th>Statut</th>
           <th>Actions</th>
@@ -40,23 +38,13 @@
       </thead>
       <tbody>
         <tr *ngFor="let r of reservations">
-          <td class="td-id">{{ r.id }}</td>
+          <td>{{ r.id }}</td>
           <td>
             <div class="user-cell">
               <div class="avatar student-avatar">{{ (r.studidname || '?')[0].toUpperCase() }}</div>
               <span>{{ r.studidname }}</span>
             </div>
           </td>
-          <td>
-            <div class="user-cell" *ngIf="r.coachName; else noCoach">
-              <div class="avatar coach-avatar">{{ (r.coachName || '?')[0].toUpperCase() }}</div>
-              <span>{{ r.coachName }}</span>
-            </div>
-            <ng-template #noCoach>
-              <span class="no-data">—</span>
-            </ng-template>
-          </td>
-          <td>{{ r.seance?.goodName || '—' }}</td>
           <td>{{ r.merenumber }}</td>
           <td>
             <span class="status-badge" [ngClass]="getStatusClass(r.status)">
@@ -88,10 +76,6 @@
       <div class="form-group">
         <label>Nom de l'étudiant</label>
         <input type="text" [(ngModel)]="editingReservation.studidname" placeholder="Nom de l'étudiant" />
-      </div>
-      <div class="form-group">
-        <label>Nom du tuteur / coach</label>
-        <input type="text" [(ngModel)]="editingReservation.coachName" placeholder="Nom du coach" />
       </div>
       <div class="form-group">
         <label>Date de réservation</label>
