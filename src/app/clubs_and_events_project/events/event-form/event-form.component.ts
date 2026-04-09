@@ -45,8 +45,8 @@ export class EventFormComponent implements OnInit {
   }
 
   // Custom Validators
-  futureDateValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) return null;
+  futureDateValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value || this.isEditMode) return null;
     const date = new Date(control.value);
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -134,8 +134,8 @@ export class EventFormComponent implements OnInit {
     console.log('Start Date value:', this.eventForm.get('startDate')?.value);
     console.log('End Date valid:', this.eventForm.get('endDate')?.valid);
     console.log('End Date value:', this.eventForm.get('endDate')?.value);
-    console.log('Description valid:', this.eventForm.get('description')?.valid);
-    console.log('Description value:', this.eventForm.get('description')?.value);
+    console.log('Manifesto valid:', this.eventForm.get('manifesto')?.valid);
+    console.log('Manifesto value:', this.eventForm.get('manifesto')?.value);
     console.log('Max Participants valid:', this.eventForm.get('maxParticipants')?.valid);
     console.log('Max Participants value:', this.eventForm.get('maxParticipants')?.value);
 

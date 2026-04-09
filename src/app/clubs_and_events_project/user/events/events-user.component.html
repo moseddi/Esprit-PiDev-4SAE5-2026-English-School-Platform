@@ -190,4 +190,187 @@
         }
 
     </main>
+
+    <!-- Registration Modal -->
+    @if (showRegistrationModal) {
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2D5757]/80 backdrop-blur-sm animate-in fade-in duration-300">
+        <div
+            class="bg-[#F7EDE2] rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-in zoom-in-95 duration-300 border border-white/20 custom-scrollbar">
+            <!-- Close Button -->
+            <button (click)="closeRegistrationModal()"
+                class="absolute top-6 right-6 text-[#2D5757]/40 hover:text-[#2D5757] transition-colors bg-[#2D5757]/5 hover:bg-[#2D5757]/10 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <h3 class="text-3xl font-extrabold text-[#2D5757] mb-1 tracking-tight">Register</h3>
+            <p class="text-[#2D5757]/60 mb-8 font-medium">For: {{ selectedEventForRegistration?.Title ||
+                $any(selectedEventForRegistration)?.title }}</p>
+
+            @if (registrationSuccess) {
+            <div
+                class="bg-green-50 text-green-700 p-8 rounded-2xl mb-2 border border-green-100 flex flex-col items-center justify-center text-center animate-in fade-in tracking-wide">
+                <div class="bg-green-100 p-3 rounded-full mb-4">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <span class="font-bold text-lg">Registration Successful!</span>
+                <span class="text-sm mt-1 opacity-75">You are now registered for this event.</span>
+            </div>
+            } @else {
+            <form (ngSubmit)="submitRegistration()" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Full
+                        Name</label>
+                    <input type="text" [(ngModel)]="registrationForm.userName" name="userName" required
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Enter your name">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Email
+                        Address</label>
+                    <input type="email" [(ngModel)]="registrationForm.userEmail" name="userEmail" required
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Enter your email">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Gender</label>
+                        <select [(ngModel)]="registrationForm.gender" name="gender" required
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Academic
+                            Level</label>
+                        <input type="text" [(ngModel)]="registrationForm.level" name="level"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                            placeholder="e.g. 2nd Year">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Discovery
+                            Source</label>
+                        <select [(ngModel)]="registrationForm.discoverySource" name="discoverySource"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>How did you hear about us?</option>
+                            <option value="EMAIL">Email</option>
+                            <option value="FACEBOOK">Facebook</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="PLATFORM">Platform</option>
+                            <option value="CLUB">Club</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Payment
+                            Method</label>
+                        <select [(ngModel)]="registrationForm.paymentMethod" name="paymentMethod"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Payment</option>
+                            <option value="CARD">Card</option>
+                            <option value="CASH">Cash</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Reason
+                        for joining</label>
+                    <select [(ngModel)]="registrationForm.reason" name="reason"
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                        <option value="" disabled>What brings you here?</option>
+                        <option value="NETWORKING">Networking</option>
+                        <option value="LEARNING">Learning</option>
+                        <option value="FUN">Fun</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Hobbies</label>
+                    <input type="text" [(ngModel)]="registrationForm.hobbies" name="hobbies"
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Your hobbies...">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Specialty</label>
+                        <select [(ngModel)]="registrationForm.specialty" name="specialty"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Specialty</option>
+                            <option value="INFO">Information Technology</option>
+                            <option value="BUSINESS">Business & Marketing</option>
+                            <option value="ART">Art & Design</option>
+                            <option value="ENGINEERING">Engineering</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Age</label>
+                        <input type="number" [(ngModel)]="registrationForm.age" name="age"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                            placeholder="Your age">
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Participation
+                        Mode</label>
+                    <div class="flex gap-4">
+                        <button type="button" (click)="registrationForm.participationMode = 'PRESENTIAL'"
+                            [class.bg-[#2D5757]]="registrationForm.participationMode === 'PRESENTIAL'"
+                            [class.text-[#F7EDE2]]="registrationForm.participationMode === 'PRESENTIAL'"
+                            class="flex-1 py-4 border border-[#2D5757]/10 rounded-2xl font-bold transition-all">Presential</button>
+                        <button type="button" (click)="registrationForm.participationMode = 'ONLINE'"
+                            [class.bg-[#2D5757]]="registrationForm.participationMode === 'ONLINE'"
+                            [class.text-[#F7EDE2]]="registrationForm.participationMode === 'ONLINE'"
+                            class="flex-1 py-4 border border-[#2D5757]/10 rounded-2xl font-bold transition-all">Online</button>
+                    </div>
+                </div>
+
+                @if (registrationError) {
+                <div
+                    class="text-red-500 text-sm font-bold bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center shadow-sm">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ registrationError }}
+                </div>
+                }
+
+                <button type="submit"
+                    class="w-full py-4 bg-[#2D5757] text-[#F7EDE2] font-extrabold text-sm rounded-2xl hover:bg-[#1a3a3a] transition-all duration-300 shadow-xl active:scale-[0.98] mt-4 tracking-widest flex justify-center items-center group">
+                    CONFIRM REGISTRATION
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </form>
+            }
+        </div>
+    </div>
+    }
 </div>

@@ -22,6 +22,25 @@ export class EventsUserComponent implements OnInit {
     // Track which events the user has registered for (in-session)
     registeredEventIds = new Set<number>();
 
+    // Registration Modal State
+    showRegistrationModal = false;
+    selectedEventForRegistration: Event | null = null;
+    registrationForm = {
+        userName: '',
+        userEmail: '',
+        discoverySource: '',
+        gender: '',
+        reason: '',
+        level: '',
+        hobbies: '',
+        paymentMethod: '',
+        age: null,
+        specialty: '',
+        participationMode: 'PRESENTIAL'
+    };
+    registrationError: string | null = null;
+    registrationSuccess = false;
+
     constructor(
         private eventService: EventService,
         private router: Router
@@ -72,13 +91,53 @@ export class EventsUserComponent implements OnInit {
         return event.Title || event.title || '';
     }
 
-    register(event: Event) {
-        const id = event.ID_Event || event.id;
-        if (this.registeredEventIds.has(id)) {
-            return; // already registered
+    openRegistrationModal(event: Event) {
+        this.selectedEventForRegistration = event;
+        this.showRegistrationModal = true;
+        this.registrationSuccess = false;
+        this.registrationError = null;
+        this.registrationForm = {
+            userName: '',
+            userEmail: '',
+            discoverySource: '',
+            gender: '',
+            reason: '',
+            level: '',
+            hobbies: '',
+            paymentMethod: '',
+            age: null,
+            specialty: '',
+            participationMode: 'PRESENTIAL'
+        };
+    }
+
+    closeRegistrationModal() {
+        this.showRegistrationModal = false;
+        this.selectedEventForRegistration = null;
+    }
+
+    submitRegistration() {
+        if (!this.selectedEventForRegistration || !this.registrationForm.userName || !this.registrationForm.userEmail) {
+            this.registrationError = 'Please fill all required fields';
+            return;
         }
-        this.registeredEventIds.add(id);
-        console.log('EventsUserComponent: User registered for event:', id);
+
+        const eventId = this.selectedEventForRegistration.ID_Event || this.selectedEventForRegistration.id;
+
+        this.eventService.registerForEvent(eventId, this.registrationForm).subscribe({
+            next: (response) => {
+                this.registrationSuccess = true;
+                this.registeredEventIds.add(eventId);
+                setTimeout(() => this.closeRegistrationModal(), 2000);
+            },
+            error: (error) => {
+                this.registrationError = error.error?.error || 'Registration failed due to a server error';
+            }
+        });
+    }
+
+    register(event: Event) {
+        this.openRegistrationModal(event);
     }
 
     isRegistered(event: Event): boolean {

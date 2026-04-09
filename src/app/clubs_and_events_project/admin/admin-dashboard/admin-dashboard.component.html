@@ -122,6 +122,36 @@
           </div>
         </div>
       </div>
+
+      <!-- Financial Dashboard (Real-Time WebSocket) -->
+      <div
+        class="group bg-[#2D5757] rounded-[3.5rem] p-12 shadow-2xl hover:-translate-y-3 transition-all duration-500 overflow-hidden relative col-span-1 md:col-span-3 lg:col-span-1">
+        <div
+          class="absolute -left-20 -top-20 w-60 h-60 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors">
+        </div>
+        <div class="flex flex-col h-full relative z-10 text-[#F7EDE2]">
+          <div
+            class="bg-white/10 w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform">
+            <svg class="w-10 h-10 text-[#F7EDE2] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-3xl font-black mb-2 tracking-tighter uppercase leading-none">Financial Data</h3>
+          <p class="text-white/50 text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-6">Real-Time Event Budget Stream (WebSocket)</p>
+          
+          <div class="mt-auto space-y-4">
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/5">
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-1">Total Estimated Cost</p>
+              <p class="text-3xl font-black text-[#5CFF9B]">{{ currentStats.totalEstimatedCost | currency:'TND':'symbol' }}</p>
+            </div>
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/5 flex justify-between items-center">
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">Active Managed Events</p>
+              <p class="text-2xl font-black">{{ currentStats.activeEventsCount }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

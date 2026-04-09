@@ -159,4 +159,16 @@ export class EventService {
       })
     );
   }
+
+  registerForEvent(eventId: number, data: { userName: string, userEmail: string }): Observable<any> {
+    console.log('=== EVENT SERVICE REGISTER ===');
+    console.log(`Registering for event ${eventId}:`, data);
+    return this.http.post(`${this.apiUrl}/${eventId}/register`, data, this.httpOptions).pipe(
+      catchError((error) => {
+        console.error('=== REGISTER EVENT ERROR ===');
+        console.error('Error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

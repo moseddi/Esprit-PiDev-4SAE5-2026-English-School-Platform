@@ -31,6 +31,10 @@ const routes: Routes = [
     loadComponent: () => import('../events/event-details/event-details.component').then(c => c.EventDetailsComponent)
   },
   {
+    path: 'event-stats/:id',
+    loadComponent: () => import('../admin/event-stats-dashboard/event-stats-dashboard.component').then(c => c.EventStatsDashboardComponent)
+  },
+  {
     path: 'spaces',
     redirectTo: '/admin-spaces',
     pathMatch: 'full'
