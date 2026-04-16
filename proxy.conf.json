@@ -1,0 +1,34 @@
+{
+  "/api": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/ws-popularity": {
+    "target": "http://localhost:7071",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/ws-event-dashboard": {
+    "target": "http://localhost:7072",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/Cours_Service": {
+    "target": "http://localhost:5059",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/Coaching-service": {
+    "target": "http://localhost:5057",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

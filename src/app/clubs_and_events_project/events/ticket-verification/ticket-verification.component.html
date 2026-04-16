@@ -1,0 +1,122 @@
+<div class="verification-container" [class.verified]="verified && !loading">
+  <div class="glass-card" *ngIf="!loading && !error">
+    
+    <!-- Top Animated Header -->
+    <div class="header">
+      <div class="status-badge" *ngIf="verified">
+        <i class="fas fa-check-circle"></i> BILLET AUTHENTIFIÉ
+      </div>
+      <div class="verified-stamp" *ngIf="registration?.attended">
+        <span>ADMIS</span>
+      </div>
+      <h1 class="event-title">{{ event?.Title }}</h1>
+      <p class="event-type-badge">{{ event?.Type }}</p>
+    </div>
+
+    <div class="ticket-body">
+      <!-- Section Participant -->
+      <div class="user-info">
+        <div class="avatar-container">
+          <div class="avatar">
+            {{ registration?.userName?.charAt(0) }}
+          </div>
+          <div class="online-indicator"></div>
+        </div>
+        <div class="details">
+          <h3>{{ registration?.userName }}</h3>
+          <p class="email"><i class="far fa-envelope"></i> {{ registration?.userEmail }}</p>
+          <div class="user-badges">
+            <span class="badge-pill">{{ registration?.level }}</span>
+            <span class="badge-pill member">MEMBRE PREMIUM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Details Event -->
+      <div class="event-metadata">
+        <!-- New Large Seat Display -->
+        <div class="seat-focus-box" *ngIf="registration?.seatNumber">
+          <span class="label">EMPLACEMENT RÉSERVÉ</span>
+          <div class="seat-number-giant">
+            <i class="fas fa-chair"></i> {{ registration?.seatNumber }}
+          </div>
+          <p class="seat-instruction">Veuillez vous diriger vers ce siège</p>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-item">
+            <span class="label">Date & Heure</span>
+            <span class="value"><i class="far fa-calendar-alt"></i> {{ event?.StartDate | date:'dd MMM yyyy HH:mm' }}</span>
+          </div>
+        </div>
+        
+        <div class="meta-row split">
+          <div class="meta-item">
+            <span class="label">Ticket ID</span>
+            <span class="value">#REG-00{{ registration?.id }}</span>
+          </div>
+          <div class="meta-item align-right">
+            <span class="label">Paiement</span>
+            <span class="value"><i class="fas fa-credit-card"></i> {{ registration?.paymentMethod }}</span>
+          </div>
+        </div>
+
+        <div class="description-box" *ngIf="event?.Manifesto">
+          <span class="label">Note de l'événement</span>
+          <p class="manifesto-text">{{ event?.Manifesto }}</p>
+        </div>
+      </div>
+
+      <!-- Animation de Scan High-Tech -->
+      <div class="scan-visual" [class.completed]="registration?.attended">
+        <div class="scanning-line" *ngIf="!registration?.attended"></div>
+        <div class="scanner-grid"></div>
+        <i class="fas fa-microchip central-icon" *ngIf="!registration?.attended"></i>
+        <i class="fas fa-user-check central-icon active" *ngIf="registration?.attended"></i>
+      </div>
+    </div>
+
+    <!-- Actions Interactives -->
+    <div class="actions">
+      <button class="btn-checkin" 
+              [class.loading]="isCheckingIn"
+              [disabled]="registration?.attended || isCheckingIn" 
+              (click)="confirmAttendance()">
+        <span *ngIf="!isCheckingIn && !registration?.attended">CONFIRMER L'ARRIVÉE</span>
+        <span *ngIf="isCheckingIn">TRAITEMENT SÉCURISÉ...</span>
+        <span *ngIf="registration?.attended"><i class="fas fa-check"></i> ENTRÉE AUTORISÉE</span>
+      </button>
+      
+      <div class="secondary-actions" *ngIf="registration?.attended">
+        <button class="btn-secondary"><i class="fas fa-file-download"></i> Reçu</button>
+        <button class="btn-secondary"><i class="fas fa-share-alt"></i> Partager</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="security-seal">
+        <i class="fas fa-shield-alt"></i> Sécurisé par SchoolPlatform Encryption
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="state-overlay loading-state" *ngIf="loading">
+    <div class="modern-loader">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <p>Interrogation de la Blockchain Ticket...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="state-overlay error-state" *ngIf="error">
+    <div class="error-icon-box">
+      <i class="fas fa-times"></i>
+    </div>
+    <h2>Billet Invalide</h2>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="ngOnInit()">Scanner à nouveau</button>
+  </div>
+</div>

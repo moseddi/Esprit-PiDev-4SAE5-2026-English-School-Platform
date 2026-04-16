@@ -1,0 +1,37 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+canvas {
+    max-width: 100%;
+}
+
+/* Glass effect for active cards */
+.bg-white {
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.bg-white:hover {
+    transform: translateY(-5px);
+    border-color: #2D575715;
+}
+
+/* Custom animation for badges */
+@keyframes pulse-soft {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-pulse {
+    animation: pulse-soft 2s infinite ease-in-out;
+}

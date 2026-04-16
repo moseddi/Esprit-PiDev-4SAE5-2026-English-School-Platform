@@ -1,0 +1,482 @@
+<div class="min-h-screen bg-[#2D5757]">
+
+    <!-- Header -->
+    <header class="bg-[#2D5757]/80 backdrop-blur-lg border-b border-[#F7EDE2]/10 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center space-x-4">
+                    <button (click)="goBack()"
+                        class="text-[#F7EDE2]/70 hover:text-[#F7EDE2] transition-colors flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-white/5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span class="text-sm font-bold uppercase tracking-wide">Back</span>
+                    </button>
+                    <div class="w-px h-6 bg-[#F7EDE2]/20"></div>
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-[#F7EDE2] p-2.5 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-[#2D5757]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-bold text-[#F7EDE2] tracking-tight">Browse Events</h1>
+                    </div>
+                </div>
+                <span class="text-[#F7EDE2]/50 text-xs font-bold uppercase tracking-widest">{{ filteredEvents.length }}
+                    events
+                    found</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Search Section -->
+        <div class="mb-12 max-w-2xl mx-auto">
+            <div class="relative group">
+                <label for="eventSearch" class="sr-only">Search events</label>
+                <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-[#F7EDE2]/40 group-focus-within:text-[#F7EDE2] transition-colors duration-300"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input id="eventSearch" type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+                    placeholder="Search for an event by title..."
+                    class="w-full bg-white/5 border border-white/10 text-[#F7EDE2] placeholder-[#F7EDE2]/20 rounded-2xl py-5 pl-16 pr-6 focus:outline-none focus:ring-4 focus:ring-white/5 focus:border-white/30 transition-all duration-300 font-bold">
+            </div>
+        </div>
+
+        <!-- Page Title -->
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-extrabold text-[#F7EDE2] mb-4 tracking-tight">Upcoming Events</h2>
+            <p class="text-[#F7EDE2]/60 text-lg max-w-2xl mx-auto">Discover and register for school events and
+                activities</p>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="flex justify-center items-center py-24">
+            <div class="text-center">
+                <div
+                    class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-[#F7EDE2]/20 border-t-[#F7EDE2]">
+                </div>
+                <p class="mt-6 text-[#F7EDE2]/50 font-medium tracking-wide">Loading wonderful events...</p>
+            </div>
+        </div>
+        }
+
+        <!-- Error State -->
+        @if (error && !isLoading) {
+        <div class="flex justify-center items-center py-20">
+            <div
+                class="bg-[#F7EDE2]/5 border border-[#F7EDE2]/10 text-[#F7EDE2] px-10 py-10 rounded-3xl text-center max-w-md shadow-2xl">
+                <svg class="w-16 h-16 mx-auto mb-6 text-red-300/60" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="font-bold text-2xl mb-3">Something went wrong</p>
+                <p class="text-[#F7EDE2]/60 mb-8">{{ error }}</p>
+                <button (click)="loadEvents()"
+                    class="px-8 py-3 bg-[#F7EDE2] text-[#2D5757] font-bold rounded-xl hover:bg-white transition-all duration-300 shadow-lg">
+                    Try again
+                </button>
+            </div>
+        </div>
+        }
+
+        <!-- Empty State -->
+        @if (!isLoading && !error && filteredEvents.length === 0) {
+        <div class="text-center py-24 bg-white/5 rounded-3xl border border-white/5">
+            <svg class="w-20 h-20 mx-auto mb-6 text-[#F7EDE2]/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <p class="text-[#F7EDE2]/40 text-xl font-medium tracking-wide">No events matching your search.</p>
+        </div>
+        }
+
+        <!-- Events Grid -->
+        @if (!isLoading && !error && filteredEvents.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @for (event of filteredEvents; track $index) {
+            <div
+                class="group bg-[#F7EDE2] rounded-3xl border border-white/5 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col">
+
+                <div class="p-8 flex flex-col h-full">
+                    <!-- Type Badge + Status -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span
+                            class="px-4 py-1.5 text-[10px] font-extrabold rounded-full bg-[#2D5757] text-[#F7EDE2] uppercase tracking-widest">
+                            {{ event.Type || $any(event).type }}
+                        </span>
+                        <span class="px-3 py-1 text-[10px] font-extrabold rounded-full border tracking-wider uppercase"
+                            [class]="(event.Status || $any(event).status) === 'PLANNED' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                       (event.Status || $any(event).status) === 'SCHEDULED' ? 'bg-green-50 text-green-600 border-green-100' :
+                       (event.Status || $any(event).status) === 'IN_PROGRESS' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                       'bg-gray-50 text-gray-600 border-gray-100'">
+                            {{ event.Status || $any(event).status }}
+                        </span>
+                    </div>
+
+                    <!-- Event Title -->
+                    <h3 class="text-2xl font-bold text-[#2D5757] mb-3 leading-tight">
+                        {{ event.Title || $any(event).title }}
+                    </h3>
+
+                    <!-- Description -->
+                    <p class="text-[#2D5757]/60 text-sm leading-relaxed mb-6 line-clamp-3">
+                        {{ event.Manifesto || $any(event).description }}
+                    </p>
+
+                    <!-- Details -->
+                    <div class="space-y-3 mb-8 py-6 border-y border-[#2D5757]/5">
+                        <div class="flex items-center text-[#2D5757]/80 text-sm font-medium">
+                            <svg class="w-5 h-5 mr-3 text-[#2D5757]/40 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>{{ (event.StartDate || $any(event).startDate) | date:'dd MMM yyyy, HH:mm' }}</span>
+                        </div>
+                        <div class="flex items-center text-[#2D5757]/80 text-sm font-medium">
+                            <svg class="w-5 h-5 mr-3 text-[#2D5757]/40 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ (event.EndDate || $any(event).endDate) | date:'dd MMM yyyy, HH:mm' }}</span>
+                        </div>
+                        <div class="flex items-center text-[#2D5757]/80 text-sm font-medium">
+                            <svg class="w-5 h-5 mr-3 text-[#2D5757]/40 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>{{ event.MaxParticipants || $any(event).maxParticipants }} spots available</span>
+                        </div>
+                    </div>
+
+                    <!-- Register Button -->
+                    <div class="mt-auto">
+                        @if (isRegistered(event)) {
+                        <div
+                            class="w-full py-4 rounded-2xl bg-green-50 text-green-600 font-bold text-sm flex items-center justify-center space-x-2 border border-green-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>REGISTERED</span>
+                        </div>
+                        } @else {
+                        <button (click)="register(event)"
+                            class="w-full py-4 rounded-2xl bg-[#2D5757] text-[#F7EDE2] font-extrabold text-sm transition-all duration-300 hover:bg-[#1a3a3a] shadow-lg flex items-center justify-center space-x-3 group/btn">
+                            <svg class="w-5 h-5 group-hover/btn:scale-110 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>REGISTER NOW</span>
+                        </button>
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+
+    </main>
+
+    <!-- Registration Modal -->
+    @if (showRegistrationModal) {
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2D5757]/80 backdrop-blur-sm animate-in fade-in duration-300">
+        <div
+            class="bg-[#F7EDE2] rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-in zoom-in-95 duration-300 border border-white/20 custom-scrollbar">
+            <!-- Close Button -->
+            <button (click)="closeRegistrationModal()"
+                class="absolute top-6 right-6 text-[#2D5757]/40 hover:text-[#2D5757] transition-colors bg-[#2D5757]/5 hover:bg-[#2D5757]/10 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <h3 class="text-3xl font-extrabold text-[#2D5757] mb-1 tracking-tight">Register</h3>
+            <p class="text-[#2D5757]/60 mb-8 font-medium">For: {{ selectedEventForRegistration?.Title ||
+                $any(selectedEventForRegistration)?.title }}</p>
+
+            @if (registrationSuccess) {
+            <div class="animate-in fade-in zoom-in-95 duration-500">
+                @if (isWaitlisted) {
+                <div class="bg-orange-50 text-orange-700 p-8 rounded-3xl mb-2 border border-orange-100 flex flex-col items-center justify-center text-center shadow-sm">
+                    <div class="bg-orange-100 p-4 rounded-full mb-6">
+                        <svg class="w-12 h-12 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-black text-2xl tracking-tighter uppercase mb-2">Waitlist Joined!</span>
+                    <p class="text-sm font-bold opacity-80 leading-relaxed">
+                        Event capacity has been reached. Your application has been submitted to the <span class="underline decoration-2">WAITLIST</span>. 
+                        You will be notified if a spot opens up.
+                    </p>
+                </div>
+                } @else {
+                <div class="bg-green-50 text-green-700 p-8 rounded-3xl mb-2 border border-green-100 flex flex-col items-center justify-center text-center shadow-sm">
+                    <div class="bg-green-100 p-4 rounded-full mb-6">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <span class="font-black text-2xl tracking-tighter uppercase mb-2">Registration Successful!</span>
+                    <p class="text-sm font-bold opacity-80 leading-relaxed">
+                        Your place is confirmed. Please check your email for your QR code ticket.
+                    </p>
+                </div>
+                }
+            </div>
+            } @else {
+            <form (ngSubmit)="submitRegistration()" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Full
+                        Name</label>
+                    <input type="text" [(ngModel)]="registrationForm.userName" name="userName" required
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Enter your name">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Email
+                        Address</label>
+                    <input type="email" [(ngModel)]="registrationForm.userEmail" name="userEmail" required
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Enter your email">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Gender</label>
+                        <select [(ngModel)]="registrationForm.gender" name="gender" required
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Gender</option>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Academic
+                            Level</label>
+                        <input type="text" [(ngModel)]="registrationForm.level" name="level"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                            placeholder="e.g. 2nd Year">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Discovery
+                            Source</label>
+                        <select [(ngModel)]="registrationForm.discoverySource" name="discoverySource"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>How did you hear about us?</option>
+                            <option value="EMAIL">Email</option>
+                            <option value="FACEBOOK">Facebook</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="PLATFORM">Platform</option>
+                            <option value="CLUB">Club</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Payment
+                            Method</label>
+                        <select [(ngModel)]="registrationForm.paymentMethod" name="paymentMethod"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Payment</option>
+                            <option value="CARD">Card</option>
+                            <option value="CASH">Cash</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Reason
+                        for joining</label>
+                    <select [(ngModel)]="registrationForm.reason" name="reason"
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                        <option value="" disabled>What brings you here?</option>
+                        <option value="NETWORKING">Networking</option>
+                        <option value="LEARNING">Learning</option>
+                        <option value="FUN">Fun</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Hobbies</label>
+                    <input type="text" [(ngModel)]="registrationForm.hobbies" name="hobbies"
+                        class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                        placeholder="Your hobbies...">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Specialty</label>
+                        <select [(ngModel)]="registrationForm.specialty" name="specialty"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold shadow-sm appearance-none">
+                            <option value="" disabled>Select Specialty</option>
+                            <option value="INFO">Information Technology</option>
+                            <option value="BUSINESS">Business & Marketing</option>
+                            <option value="ART">Art & Design</option>
+                            <option value="ENGINEERING">Engineering</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Age</label>
+                        <input type="number" [(ngModel)]="registrationForm.age" name="age"
+                            class="w-full bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#2D5757]/10 focus:border-[#2D5757]/30 transition-all font-bold placeholder-[#2D5757]/30 shadow-sm"
+                            placeholder="Your age">
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Participation
+                        Mode</label>
+                    <div class="flex gap-4">
+                        <button type="button" (click)="registrationForm.participationMode = 'PRESENTIAL'"
+                            [class.bg-[#2D5757]]="registrationForm.participationMode === 'PRESENTIAL'"
+                            [class.text-[#F7EDE2]]="registrationForm.participationMode === 'PRESENTIAL'"
+                            class="flex-1 py-4 border border-[#2D5757]/10 rounded-2xl font-bold transition-all">Presential</button>
+                        <button type="button" (click)="registrationForm.participationMode = 'ONLINE'"
+                            [class.bg-[#2D5757]]="registrationForm.participationMode === 'ONLINE'"
+                            [class.text-[#F7EDE2]]="registrationForm.participationMode === 'ONLINE'"
+                            class="flex-1 py-4 border border-[#2D5757]/10 rounded-2xl font-bold transition-all">Online</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2D5757]/80 mb-2 uppercase tracking-widest ml-1">Seat Reservation</label>
+                    <button type="button" (click)="openSeatModal()" 
+                            class="w-full flex items-center justify-between bg-white/70 border border-[#2D5757]/10 text-[#2D5757] rounded-2xl px-5 py-4 hover:border-[#2D5757]/30 transition-all shadow-sm group">
+                        <span class="font-bold flex items-center">
+                            <i class="fas fa-chair mr-3 text-[#2D5757]/40"></i>
+                            {{ registrationForm.seatNumber ? 'Seat ' + registrationForm.seatNumber : 'Choose your seat' }}
+                        </span>
+                        <span class="text-[10px] font-black uppercase bg-[#2D5757]/10 px-3 py-1 rounded-lg">RESERVE PLACE</span>
+                    </button>
+                </div>
+
+                @if (registrationError) {
+                <div
+                    class="text-red-500 text-sm font-bold bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center shadow-sm">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ registrationError }}
+                </div>
+                }
+
+                <button type="submit"
+                    class="w-full py-4 bg-[#2D5757] text-[#F7EDE2] font-extrabold text-sm rounded-2xl hover:bg-[#1a3a3a] transition-all duration-300 shadow-xl active:scale-[0.98] mt-4 tracking-widest flex justify-center items-center group">
+                    CONFIRM REGISTRATION
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </form>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Seating Chart Modal -->
+    @if (showSeatModal) {
+    <div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#0d1515]/95 backdrop-blur-md animate-in fade-in duration-300">
+        <div class="bg-[#F7EDE2] rounded-[40px] max-w-2xl w-full max-h-[90vh] shadow-2xl relative animate-in slide-in-from-bottom-32 duration-500 overflow-hidden flex flex-col">
+            
+            <!-- Modal Header (Fixed) -->
+            <div class="p-8 pb-4 flex justify-between items-center border-b border-[#2D5757]/5">
+                <div>
+                    <h3 class="text-3xl font-black text-[#2D5757] tracking-tighter uppercase">Choose your seat</h3>
+                    <p class="text-[#2D5757]/40 text-[10px] font-black uppercase tracking-widest">Select an available place from the room</p>
+                </div>
+                <button (click)="closeSeatModal()" class="bg-[#2D5757]/5 hover:bg-[#2D5757]/10 p-3 rounded-2xl transition-all">
+                    <svg class="w-6 h-6 text-[#2D5757]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-5 custom-scrollbar">
+                <!-- Cinema Screen -->
+                <div class="mb-6">
+                    <div class="w-full h-1.5 bg-gradient-to-r from-transparent via-[#2D5757]/20 to-transparent rounded-full mb-3"></div>
+                    <p class="text-center text-[9px] font-black text-[#2D5757]/20 tracking-[.8em] uppercase">STAGE / SCREEN</p>
+                </div>
+
+                <!-- Seating Chart -->
+                <div class="flex flex-col items-center gap-2 mb-6">
+                    @for (row of rows; track $index) {
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 text-center text-[10px] font-black text-[#2D5757]/20">{{ row }}</span>
+                        <div class="flex gap-1">
+                            @for (col of cols; track $index) {
+                            <button type="button" 
+                                (click)="selectSeat(row + col)"
+                                [class]="getSeatClasses(row, col)">
+                                <i class="fas fa-chair text-[10px]"></i>
+                            </button>
+                            }
+                        </div>
+                        <span class="w-5 text-center text-[10px] font-black text-[#2D5757]/20">{{ row }}</span>
+                    </div>
+                    }
+                </div>
+
+                <!-- Legend -->
+                <div class="flex justify-center gap-6 py-4 border-t border-[#2D5757]/5">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-sm bg-white border border-[#2D5757]/10"></div>
+                        <span class="text-[9px] font-black text-[#2D5757]/40 uppercase tracking-widest">Free</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-sm bg-red-200"></div>
+                        <span class="text-[9px] font-black text-[#2D5757]/40 uppercase tracking-widest">Reserved</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-sm bg-[#2D5757]"></div>
+                        <span class="text-[9px] font-black text-[#2D5757]/40 uppercase tracking-widest">Picked</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer (Fixed) -->
+            <div class="p-5 pt-0">
+                <button 
+                    [disabled]="!selectedSeat"
+                    (click)="confirmSeat()"
+                    class="w-full py-5 bg-[#2D5757] text-[#F7EDE2] font-black text-xs rounded-2xl hover:bg-[#1a3a3a] transition-all shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed tracking-[.3em] uppercase flex items-center justify-center gap-4 group">
+                    <span>CONFIRM SEAT <b class="text-[#4ade80] ml-2">{{ selectedSeat || '...' }}</b></span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>
