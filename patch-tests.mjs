@@ -52,3 +52,4 @@ function patchFile(file) {
 }
 
 testFiles.forEach(patchFile);
+
