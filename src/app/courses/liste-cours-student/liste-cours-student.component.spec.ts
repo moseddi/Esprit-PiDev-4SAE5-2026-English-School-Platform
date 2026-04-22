@@ -1,3 +1,5 @@
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListeCoursStudentComponent } from './liste-cours-student.component';
@@ -8,7 +10,7 @@ describe('ListeCoursStudentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListeCoursStudentComponent]
+      imports: [ListeCoursStudentComponent, HttpClientTestingModule, RouterTestingModule.withRoutes([])]
     })
     .compileComponents();
 

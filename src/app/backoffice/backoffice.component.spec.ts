@@ -1,3 +1,5 @@
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BackofficeComponent } from './backoffice.component';
@@ -8,7 +10,7 @@ describe('BackofficeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BackofficeComponent]
+      imports: [BackofficeComponent, HttpClientTestingModule, RouterTestingModule.withRoutes([])]
     })
     .compileComponents();
 

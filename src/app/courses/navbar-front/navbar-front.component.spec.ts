@@ -1,3 +1,5 @@
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavbarFrontComponent } from './navbar-front.component';
@@ -8,7 +10,7 @@ describe('NavbarFrontComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavbarFrontComponent]
+      imports: [NavbarFrontComponent, HttpClientTestingModule, RouterTestingModule.withRoutes([])]
     })
     .compileComponents();
 
