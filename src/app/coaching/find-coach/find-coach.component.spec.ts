@@ -141,4 +141,88 @@ describe('FindCoachComponent', () => {
       expect(component.getAvailableDatesCount()).toBe(1);
     });
   });
+
+  describe('formatDate / formatTime', () => {
+    it('should format date string', () => {
+      const result = component.formatDate('2026-05-01');
+      expect(result).toBeTruthy();
+    });
+
+    it('should format time string', () => {
+      expect(component.formatTime('10:30:00')).toBe('10:30');
+    });
+  });
+
+  describe('buildCalendar', () => {
+    it('should build 42 calendar days', () => {
+      component.currentYear = 2026;
+      component.currentMonth = 4;
+      component.allSeances = [];
+      component.buildCalendar();
+      expect(component.calendarDays.length).toBe(42);
+    });
+  });
+
+  describe('onDateClick', () => {
+    it('should not open form for booked day', () => {
+      const day = { date: '2026-05-01', dayOfMonth: 1, isCurrentMonth: true, isToday: false, isAvailable: false, isBooked: true, seances: [] };
+      component.onDateClick(day);
+      expect(component.showReservationForm).toBeFalse();
+    });
+
+    it('should open form for available day with seance', () => {
+      const seance = { id: 1, goodName: 'Session', seanceDate: '2026-05-01', seanceTime: '10:00' };
+      const day = { date: '2026-05-01', dayOfMonth: 1, isCurrentMonth: true, isToday: false, isAvailable: true, isBooked: false, seances: [seance] };
+      component.selectedCoach = { id: 1, firstName: 'Alice', lastName: 'Smith', email: 'alice@test.com' };
+      component.onDateClick(day);
+      expect(component.showReservationForm).toBeTrue();
+    });
+
+    it('should create default seance for available day without seance', () => {
+      const day = { date: '2026-05-10', dayOfMonth: 10, isCurrentMonth: true, isToday: false, isAvailable: true, isBooked: false, seances: [] };
+      component.onDateClick(day);
+      expect(component.showReservationForm).toBeTrue();
+      expect(component.selectedSeance?.seanceDate).toBe('2026-05-10');
+    });
+  });
+
+  describe('submitReservation', () => {
+    it('should show error when no seance selected', () => {
+      component.selectedSeance = null;
+      component.submitReservation();
+      expect(component.error).toBeTruthy();
+    });
+
+    it('should call createReservationOnly when seance has id', () => {
+      coachingServiceSpy.createReservation.and.returnValue(of({ id: 1, studidname: 'John', merenumber: '2026-05-01', status: 'CONFIRMED' }));
+      component.selectedSeance = { id: 5, goodName: 'Session', seanceDate: '2026-05-01', seanceTime: '10:00' };
+      component.selectedCoach = { id: 1, email: 'alice@test.com' };
+      component.submitReservation();
+      expect(coachingServiceSpy.createReservation).toHaveBeenCalledWith(5, jasmine.any(Object));
+    });
+  });
+
+  describe('createReservationOnly', () => {
+    it('should show success message on success', () => {
+      coachingServiceSpy.createReservation.and.returnValue(of({ id: 1, studidname: 'John', merenumber: '2026-05-01', status: 'CONFIRMED' }));
+      component.selectedCoach = { id: 1, email: 'alice@test.com' };
+      component.createReservationOnly(5);
+      expect(component.successMessage).toBeTruthy();
+    });
+
+    it('should show error on failure', () => {
+      coachingServiceSpy.createReservation.and.returnValue(throwError(() => new Error('fail')));
+      component.selectedCoach = { id: 1, email: 'alice@test.com' };
+      component.createReservationOnly(5);
+      expect(component.error).toBeTruthy();
+    });
+  });
+
+  describe('loadSeancesForCoach', () => {
+    it('should handle error on loadSeancesForCoach', () => {
+      coachingServiceSpy.getSeancesByTutor.and.returnValue(throwError(() => new Error('fail')));
+      component.loadSeancesForCoach(1);
+      expect(component.loadingSeances).toBeFalse();
+    });
+  });
 });
