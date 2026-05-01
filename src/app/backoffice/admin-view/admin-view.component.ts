@@ -64,39 +64,6 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     { icon: 'bi-chat-plus', label: 'Start Club', route: '/admin/clubs/new' }
   ];
 
-  microserviceActions = [
-    {
-      icon: 'bi-diagram-3',
-      label: 'Classes',
-      description: 'CRUD classes',
-      route: '/backoffice/admin/classes'
-    },
-    {
-      icon: 'bi-calendar-week',
-      label: 'Seances',
-      description: 'Planning and session rules',
-      route: '/backoffice/admin/seances'
-    },
-    {
-      icon: 'bi-door-open',
-      label: 'Salles',
-      description: 'Rooms and capacities',
-      route: '/backoffice/admin/salles'
-    },
-    {
-      icon: 'bi-tools',
-      label: 'Materials',
-      description: 'Equipment and assignment',
-      route: '/backoffice/admin/materiels'
-    },
-    {
-      icon: 'bi-bell',
-      label: 'Warnings',
-      description: 'Advanced live alerts',
-      route: '/backoffice/admin/warnings'
-    }
-  ];
-
   recentUsers = [
     { id: 1, name: 'Sarah Ben Ali', email: 'sarah@email.com', initials: 'SB', color: '#2D5757', role: 'Student', roleColor: '#28a745', status: 'Active' },
     { id: 2, name: 'Ahmed Mansour', email: 'ahmed@email.com', initials: 'AM', color: '#17a2b8', role: 'Tutor', roleColor: '#17a2b8', status: 'Active' },
@@ -315,15 +282,11 @@ export class AdminViewComponent implements OnInit, OnDestroy {
   }
 
   navigateTo(route: string): void {
-    const target = route.startsWith('/backoffice/') ? route : `/backoffice/admin/${route}`;
-    this.router.navigate([target]);
+    console.log('Navigate to:', route);
   }
 
   handleAction(action: any): void {
-    const target = action?.route?.startsWith('/backoffice/')
-      ? action.route
-      : `/backoffice${action?.route ?? ''}`;
-    this.router.navigate([target]);
+    console.log('Action:', action.label);
   }
 
   viewUser(user: any): void {
