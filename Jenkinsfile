@@ -30,7 +30,7 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('sq1') {
                     bat """
                         npx sonar-scanner ^
                           -Dsonar.projectKey=wall-street-english ^
