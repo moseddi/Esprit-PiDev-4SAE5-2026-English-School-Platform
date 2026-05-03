@@ -10,5 +10,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/ml-api": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/ml-api": "" },
+    "logLevel": "debug"
   }
 }

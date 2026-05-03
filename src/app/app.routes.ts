@@ -48,6 +48,7 @@ import { SeancesListComponent } from './features/seances/seances-list/seances-li
 import { SallesListComponent } from './features/salles/salles-list/salles-list.component';
 import { MaterielsListComponent } from './features/materiels/materiels-list/materiels-list.component';
 import { AlertsPageComponent } from './features/alerts/alerts-page/alerts-page.component';
+import { MlDashboardComponent } from './backoffice/admin-view/ml-dashboard/ml-dashboard.component';
 
 
 
@@ -181,6 +182,12 @@ export const routes: Routes = [
       {
         path: 'admin/warnings',
         component: AlertsPageComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] }
+      },
+      {
+        path: 'admin/ml-dashboard',
+        component: MlDashboardComponent,
         canActivate: [RoleGuard],
         data: { roles: ['ADMIN'] }
       },

@@ -1,0 +1,504 @@
+<div class="ml-container">
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- HEADER                                                                 -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="ml-header">
+    <div class="header-left">
+      <div class="header-icon">🤖</div>
+      <div>
+        <h2>ML Predictions Dashboard</h2>
+        <p>Adaptive English Learning — Random Forest · SVM · XGBoost</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- server status -->
+      <div class="server-status" [class.online]="serverOnline" [class.offline]="!serverOnline && !serverChecking">
+        <span class="status-dot"></span>
+        <span *ngIf="serverChecking">Checking server…</span>
+        <span *ngIf="!serverChecking && serverOnline">Flask API online</span>
+        <span *ngIf="!serverChecking && !serverOnline">Flask API offline</span>
+      </div>
+      <button class="btn-refresh" (click)="checkServer()" [disabled]="serverChecking">
+        <span [class.spinning]="serverChecking">↻</span> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- offline banner -->
+  <div class="offline-banner" *ngIf="!serverChecking && !serverOnline">
+    <span>⚠️</span>
+    <div>
+      <strong>Flask API is not running.</strong>
+      <span> Start it with: <code>cd ml-api &amp;&amp; python app.py</code></span>
+    </div>
+  </div>
+
+  <!-- global error -->
+  <div class="error-bar" *ngIf="errorMsg">
+    <span>❌ {{ errorMsg }}</span>
+    <button (click)="errorMsg=''">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TABS                                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-bar">
+    <button [class.active]="activeTab==='predict'"         (click)="setTab('predict')">
+      🔮 Predict
+    </button>
+    <button [class.active]="activeTab==='metrics'"         (click)="setTab('metrics')">
+      📊 Model Metrics
+    </button>
+    <button [class.active]="activeTab==='recommendations'" (click)="setTab('recommendations')">
+      💡 Recommendations
+    </button>
+    <button [class.active]="activeTab==='clusters'"        (click)="setTab('clusters')">
+      👥 Student Profiles
+    </button>
+    <button [class.active]="activeTab==='features'"        (click)="setTab('features')">
+      🔍 Feature Importance
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: PREDICT                                                           -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab==='predict'">
+    <div class="predict-layout">
+
+      <!-- ── FORM ─────────────────────────────────────────────────────────── -->
+      <div class="form-card">
+        <div class="card-header">
+          <h3>📋 Session Parameters</h3>
+          <button class="btn-ghost" (click)="resetForm()">Reset</button>
+        </div>
+
+        <!-- Scores row -->
+        <div class="form-section">
+          <h4 class="section-title">📈 Performance Scores</h4>
+          <div class="form-grid">
+            <div class="field">
+              <label>Reading Speed (wpm)</label>
+              <input type="number" [(ngModel)]="form.reading_speed_wpm" min="50" max="200">
+            </div>
+            <div class="field">
+              <label>Pronunciation (%)</label>
+              <input type="number" [(ngModel)]="form.pronunciation_accuracy" min="0" max="100">
+            </div>
+            <div class="field">
+              <label>Listening Score</label>
+              <input type="number" [(ngModel)]="form.listening_score" min="0" max="100">
+            </div>
+            <div class="field">
+              <label>Reading Score</label>
+              <input type="number" [(ngModel)]="form.reading_score" min="0" max="100">
+            </div>
+            <div class="field">
+              <label>Speaking Score</label>
+              <input type="number" [(ngModel)]="form.speaking_score" min="0" max="100">
+            </div>
+            <div class="field">
+              <label>Adaptive Score</label>
+              <input type="number" [(ngModel)]="form.adaptive_score" min="0" max="100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Behaviour row -->
+        <div class="form-section">
+          <h4 class="section-title">🧠 Behaviour & Context</h4>
+          <div class="form-grid">
+            <div class="field">
+              <label>Engagement Level</label>
+              <select [(ngModel)]="form.engagement_level">
+                <option *ngFor="let e of engagementLevels" [value]="e">{{ e }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Emotion State</label>
+              <select [(ngModel)]="form.emotion_state">
+                <option *ngFor="let e of emotionStates" [value]="e">{{ e }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Content Type</label>
+              <select [(ngModel)]="form.content_type_displayed">
+                <option *ngFor="let c of contentTypes" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Difficulty</label>
+              <select [(ngModel)]="form.content_difficulty_level">
+                <option *ngFor="let d of difficultyLevels" [value]="d">{{ d }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Teaching Style</label>
+              <select [(ngModel)]="form.teaching_style">
+                <option *ngFor="let s of teachingStyles" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Device</label>
+              <select [(ngModel)]="form.device_type_used">
+                <option *ngFor="let d of deviceTypes" [value]="d">{{ d }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sensor row -->
+        <div class="form-section">
+          <h4 class="section-title">📡 Sensor & Session Data</h4>
+          <div class="form-grid">
+            <div class="field">
+              <label>Eye Tracking (ms)</label>
+              <input type="number" [(ngModel)]="form.eye_tracking_focus_duration" min="0">
+            </div>
+            <div class="field">
+              <label>Gesture Count</label>
+              <input type="number" [(ngModel)]="form.gesture_interaction_count" min="0">
+            </div>
+            <div class="field">
+              <label>Feedback Score</label>
+              <input type="number" [(ngModel)]="form.student_feedback_score" min="1" max="5" step="0.1">
+            </div>
+            <div class="field">
+              <label>Network Latency (ms)</label>
+              <input type="number" [(ngModel)]="form.network_latency_ms" min="0">
+            </div>
+            <div class="field">
+              <label>Sensor Error Rate</label>
+              <input type="number" [(ngModel)]="form.sensor_error_rate" min="0" max="5" step="0.1">
+            </div>
+            <div class="field">
+              <label>Improvement Rate (%)</label>
+              <input type="number" [(ngModel)]="form.performance_improvement_rate">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-predict" (click)="runPredict()"
+                [disabled]="loadingPredict || !serverOnline">
+          <span *ngIf="!loadingPredict">🔮 Run Prediction</span>
+          <span *ngIf="loadingPredict" class="loading-dots">Predicting<span>.</span><span>.</span><span>.</span></span>
+        </button>
+      </div>
+
+      <!-- ── RESULTS ───────────────────────────────────────────────────────── -->
+      <div class="results-card" *ngIf="predictionResult">
+
+        <!-- Ensemble verdict -->
+        <div class="verdict"
+             [class.verdict-effective]="predictionResult.predictions.ensemble.prediction===1"
+             [class.verdict-ineffective]="predictionResult.predictions.ensemble.prediction===0">
+          <div class="verdict-icon">
+            {{ predictionResult.predictions.ensemble.prediction===1 ? '✅' : '❌' }}
+          </div>
+          <div class="verdict-text">
+            <h3>{{ predictionResult.predictions.ensemble.label }}</h3>
+            <p>Ensemble confidence: <strong>{{ (predictionResult.predictions.ensemble.probability * 100).toFixed(1) }}%</strong></p>
+          </div>
+        </div>
+
+        <!-- Probability bar -->
+        <div class="prob-bar-wrap">
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill"
+                 [style.width.%]="predictionResult.predictions.ensemble.probability * 100"
+                 [style.background]="probabilityColor(predictionResult.predictions.ensemble.probability)">
+            </div>
+          </div>
+          <span>{{ (predictionResult.predictions.ensemble.probability * 100).toFixed(1) }}%</span>
+        </div>
+
+        <!-- Per-model cards -->
+        <h4 class="results-subtitle">Per-model results</h4>
+        <div class="model-results-grid">
+          <ng-container *ngFor="let key of objectKeys(predictionResult.predictions)">
+            <div class="model-result-card"
+                 *ngIf="getResult(key) as r"
+                 [class.effective]="r.prediction === 1"
+                 [class.ineffective]="r.prediction === 0">
+              <div class="model-name">{{ key | titlecase }}</div>
+              <div class="model-label">{{ r.label }}</div>
+              <div class="model-prob">{{ (r.probability * 100).toFixed(1) }}%</div>
+              <div class="model-prob-bar">
+                <div [style.width.%]="r.probability * 100"
+                     [style.background]="probabilityColor(r.probability)">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Cluster info -->
+        <div class="cluster-info" *ngIf="predictionResult.cluster_id !== null">
+          <span class="cluster-badge">👥 Student Profile: Cluster {{ predictionResult.cluster_id }}</span>
+        </div>
+
+        <!-- Input summary -->
+        <div class="input-summary">
+          <h4>Input Summary</h4>
+          <div class="summary-chips">
+            <span class="chip">{{ predictionResult.input_summary.engagement_level }}</span>
+            <span class="chip">{{ predictionResult.input_summary.emotion_state }}</span>
+            <span class="chip">{{ predictionResult.input_summary.content_type }}</span>
+            <span class="chip" [class]="difficultyBadgeClass(predictionResult.input_summary.difficulty)">
+              {{ predictionResult.input_summary.difficulty }}
+            </span>
+            <span class="chip">{{ predictionResult.input_summary.teaching_style }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- placeholder when no result yet -->
+      <div class="results-placeholder" *ngIf="!predictionResult && !loadingPredict">
+        <div class="placeholder-icon">🔮</div>
+        <p>Fill in the session parameters and click <strong>Run Prediction</strong></p>
+      </div>
+
+      <!-- loading placeholder -->
+      <div class="results-placeholder" *ngIf="loadingPredict">
+        <div class="spinner-large"></div>
+        <p>Running models…</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: METRICS                                                           -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab==='metrics'">
+
+    <div class="spinner-center" *ngIf="loadingMetrics">
+      <div class="spinner-large"></div><p>Loading metrics…</p>
+    </div>
+
+    <div *ngIf="!loadingMetrics && metricsArray.length">
+
+      <!-- KPI cards -->
+      <div class="metrics-kpi-grid">
+        <div class="metrics-kpi" *ngFor="let m of metricsArray">
+          <div class="kpi-model-name">{{ m.name }}</div>
+          <div class="kpi-auc">{{ (m.auc_roc * 100).toFixed(1) }}<span>% AUC</span></div>
+          <div class="kpi-f1">F1 {{ (m.f1 * 100).toFixed(1) }}%</div>
+        </div>
+      </div>
+
+      <!-- Detailed table -->
+      <div class="metrics-table-card">
+        <div class="card-header"><h3>📊 Detailed Metrics</h3></div>
+        <div class="table-responsive">
+          <table class="metrics-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Accuracy</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>AUC-ROC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of metricsArray">
+                <td><strong>{{ m.name }}</strong></td>
+                <td>
+                  <div class="metric-cell">
+                    <div class="mini-bar"><div [style.width.%]="metricBarWidth(m.accuracy)"></div></div>
+                    <span>{{ (m.accuracy * 100).toFixed(1) }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="metric-cell">
+                    <div class="mini-bar"><div [style.width.%]="metricBarWidth(m.precision)"></div></div>
+                    <span>{{ (m.precision * 100).toFixed(1) }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="metric-cell">
+                    <div class="mini-bar"><div [style.width.%]="metricBarWidth(m.recall)"></div></div>
+                    <span>{{ (m.recall * 100).toFixed(1) }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="metric-cell">
+                    <div class="mini-bar f1"><div [style.width.%]="metricBarWidth(m.f1)"></div></div>
+                    <span>{{ (m.f1 * 100).toFixed(1) }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="metric-cell">
+                    <div class="mini-bar auc"><div [style.width.%]="metricBarWidth(m.auc_roc)"></div></div>
+                    <span>{{ (m.auc_roc * 100).toFixed(1) }}%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingMetrics && !metricsArray.length">
+      <p>No metrics available. Make sure the Flask server is running.</p>
+      <button class="btn-primary" (click)="loadMetrics()">Retry</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: RECOMMENDATIONS                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab==='recommendations'">
+
+    <div class="spinner-center" *ngIf="loadingRecommend">
+      <div class="spinner-large"></div><p>Loading recommendations…</p>
+    </div>
+
+    <div *ngIf="!loadingRecommend && recommendations.length">
+      <div class="section-intro">
+        <h3>💡 Top Content Configurations</h3>
+        <p>Best content type / teaching style / difficulty combinations ranked by effectiveness rate.</p>
+      </div>
+
+      <div class="recommend-grid">
+        <div class="recommend-card" *ngFor="let r of recommendations; let i = index">
+          <div class="rank-badge" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">
+            #{{ i + 1 }}
+          </div>
+          <div class="recommend-body">
+            <div class="recommend-tags">
+              <span class="tag content">📄 {{ r.content }}</span>
+              <span class="tag style">🎓 {{ r.style }}</span>
+              <span class="tag" [class]="difficultyBadgeClass(r.difficulty)">⚡ {{ r.difficulty }}</span>
+            </div>
+            <div class="recommend-stats">
+              <div class="eff-bar-wrap">
+                <div class="eff-bar-track">
+                  <div class="eff-bar-fill"
+                       [style.width.%]="r.effectiveness"
+                       [style.background]="effectivenessColor(r.effectiveness)">
+                  </div>
+                </div>
+                <span class="eff-value" [style.color]="effectivenessColor(r.effectiveness)">
+                  {{ r.effectiveness }}%
+                </span>
+              </div>
+              <span class="sessions-count">{{ r.sessions }} sessions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingRecommend && !recommendations.length">
+      <p>No recommendations available.</p>
+      <button class="btn-primary" (click)="loadRecommendations()">Retry</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: CLUSTERS                                                          -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab==='clusters'">
+
+    <div class="spinner-center" *ngIf="loadingClusters">
+      <div class="spinner-large"></div><p>Loading student profiles…</p>
+    </div>
+
+    <div *ngIf="!loadingClusters && clusters.length">
+      <div class="section-intro">
+        <h3>👥 Student Profiles (K-Means Clustering)</h3>
+        <p>Automatically discovered learner archetypes based on behaviour and performance.</p>
+      </div>
+
+      <div class="clusters-grid">
+        <div class="cluster-card" *ngFor="let c of clusters">
+          <div class="cluster-header">
+            <div class="cluster-emoji">{{ clusterEmoji(c) }}</div>
+            <div>
+              <h4>Cluster {{ c.cluster_id }}</h4>
+              <span class="cluster-count">{{ c.n_students }} students</span>
+            </div>
+            <div class="cluster-eff" [style.color]="effectivenessColor(c.effectiveness)">
+              {{ c.effectiveness }}%
+            </div>
+          </div>
+
+          <div class="cluster-attrs">
+            <div class="attr">
+              <span class="attr-label">Speed</span>
+              <span class="attr-value">{{ c.speed_label }}</span>
+            </div>
+            <div class="attr">
+              <span class="attr-label">Emotion</span>
+              <span class="attr-value">{{ c.dominant_emotion }}</span>
+            </div>
+            <div class="attr">
+              <span class="attr-label">Pronunciation</span>
+              <span class="attr-value">{{ c.pronunciation }}</span>
+            </div>
+          </div>
+
+          <div class="cluster-eff-bar">
+            <div class="eff-bar-track">
+              <div class="eff-bar-fill"
+                   [style.width.%]="c.effectiveness"
+                   [style.background]="effectivenessColor(c.effectiveness)">
+              </div>
+            </div>
+            <span>Effectiveness</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingClusters && !clusters.length">
+      <p>No cluster data available.</p>
+      <button class="btn-primary" (click)="loadClusters()">Retry</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: FEATURE IMPORTANCE                                                -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-content" *ngIf="activeTab==='features'">
+
+    <div class="spinner-center" *ngIf="loadingFeatures">
+      <div class="spinner-large"></div><p>Loading feature importance…</p>
+    </div>
+
+    <div *ngIf="!loadingFeatures && featureImportance.length">
+      <div class="section-intro">
+        <h3>🔍 Top 15 Features — Random Forest</h3>
+        <p>Features ranked by their contribution to predicting content effectiveness.</p>
+      </div>
+
+      <div class="features-card">
+        <div class="feature-row" *ngFor="let f of featureImportance; let i = index">
+          <div class="feature-rank">{{ i + 1 }}</div>
+          <div class="feature-name">{{ f.feature }}</div>
+          <div class="feature-bar-wrap">
+            <div class="feature-bar-track">
+              <div class="feature-bar-fill"
+                   [style.width.%]="barWidth(f.importance)"
+                   [style.background]="i < 3 ? '#2D5757' : i < 7 ? '#4a7a7a' : '#8fb1b1'">
+              </div>
+            </div>
+          </div>
+          <div class="feature-value">{{ (f.importance * 100).toFixed(2) }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingFeatures && !featureImportance.length">
+      <p>No feature importance data available.</p>
+      <button class="btn-primary" (click)="loadFeatures()">Retry</button>
+    </div>
+  </div>
+
+</div>
